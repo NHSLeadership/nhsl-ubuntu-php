@@ -6,11 +6,10 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN \
   apt-get update && \
   apt-get install \
-    composer \
     curl \
     gpg-agent \
     software-properties-common \
-    supervisord \
+    supervisor \
     --no-install-recommends -y && \
     add-apt-repository -y ppa:ondrej/nginx-mainline && \
     add-apt-repository -y ppa:ondrej/php && \
@@ -58,6 +57,11 @@ RUN \
     --no-install-recommends -y && \
     rm -rf /var/lib/apt/lists/*
 
+## Add Composer globally
+RUN curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
+    && chmod a+x /usr/local/bin/composer
+
 ## Add Atatus GPG key and repo
 RUN apt-get install curl --no-install-recommends -y && \
   curl https://s3.amazonaws.com/atatus-artifacts/gpg/atatus.gpg | apt-key add - && \
@@ -68,11 +72,32 @@ RUN apt-get install curl --no-install-recommends -y && \
   apt-get remove curl -y && \
   rm -rf /var/lib/apt/lists/*
 
+# supervisor definitions for running nginx and php
+ADD conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
+ADD conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
+
 # Entrypoint and runner scripts
 ADD scripts/boot.sh /boot.sh
 ADD scripts/boot-web.sh /boot-web.sh
 ADD scripts/boot-worker.sh /boot-worker.sh
-RUN chmod 755 /boot-web.sh && \
-  chmod 755 /boot-worker.sh
+
+# Modify PHP-FPM configuration files to set common properties and listen on socket
+#RUN sed -i "s/;date.timezone =.*/date.timezone = UTC/" /etc/php/7.3/cli/php.ini
+#RUN sed -i "s/;date.timezone =.*/date.timezone = UTC/" /etc/php/7.3/fpm/php.ini
+##RUN sed -i "s/display_errors = Off/display_errors = On/" /etc/php/7.3/fpm/php.ini
+#RUN sed -i "s/upload_max_filesize = .*/upload_max_filesize = 100M/" /etc/php/7.3/fpm/php.ini
+#RUN sed -i "s/post_max_size = .*/post_max_size = 12M/" /etc/php/7.3/fpm/php.ini
+#RUN sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/7.3/fpm/php.ini
+#RUN sed -i -e "s/pid =.*/pid = \/var\/run\/php7.3-fpm.pid/" /etc/php/7.3/fpm/php-fpm.conf
+#RUN sed -i -e "s/error_log =.*/error_log = \/proc\/self\/fd\/2/" /etc/php/7.3/fpm/php-fpm.conf
+## RUN sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php/7.1/fpm/php-fpm.conf
+##RUN sed -i "s/listen = .*/listen = \/var\/run\/php\/php7.1-fpm.sock/" /etc/php/7.3/fpm/pool.d/www.conf
+##RUN sed -i "s/;catch_workers_output = .*/catch_workers_output = yes/" /etc/php/7.3/fpm/pool.d/www.conf
+RUN sed -i "s/listen = .*/listen = \/var\/run\/php7.3-fpm.sock/" /etc/php/7.3/fpm/pool.d/www.conf
+RUN sed -i -e "s/pid =.*/pid = \/var\/run\/php7.3-fpm.pid/" /etc/php/7.3/fpm/php-fpm.conf
+
+RUN chmod +x /boot.sh && \
+  chmod +x /boot-web.sh && \
+  chmod +x /boot-worker.sh
 
 ENTRYPOINT [ "/boot.sh" ]
