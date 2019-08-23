@@ -1,14 +1,16 @@
 FROM ubuntu:bionic
-MAINTAINER devops@nhsx.uk
-
+LABEL maintainer="devops@nhsx.uk"
+LABEL php="7.3"
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN \
   apt-get update && \
   apt-get install \
+    composer \
     curl \
     gpg-agent \
     software-properties-common \
+    supervisord \
     --no-install-recommends -y && \
     add-apt-repository -y ppa:ondrej/nginx-mainline && \
     add-apt-repository -y ppa:ondrej/php && \
@@ -65,3 +67,12 @@ RUN apt-get install curl --no-install-recommends -y && \
   apt-get install atatus-php-agent --no-install-recommends -y && \
   apt-get remove curl -y && \
   rm -rf /var/lib/apt/lists/*
+
+# Entrypoint and runner scripts
+ADD scripts/boot.sh /boot.sh
+ADD scripts/boot-web.sh /boot-web.sh
+ADD scripts/boot-worker.sh /boot-worker.sh
+RUN chmod 755 /boot-web.sh && \
+  chmod 755 /boot-worker.sh
+
+ENTRYPOINT [ "/boot.sh" ]
