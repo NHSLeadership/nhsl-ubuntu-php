@@ -1,6 +1,8 @@
 FROM ubuntu:bionic
 LABEL maintainer="devops@nhsx.uk"
-LABEL php="7.3"
+
+ENV S6_OVERLAY_VERSION 1.22.1.0
+ENV PHP_VERSION 7.3
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN \
@@ -9,55 +11,67 @@ RUN \
     curl \
     gpg-agent \
     software-properties-common \
-    supervisor \
+    tzdata \
     --no-install-recommends -y && \
     add-apt-repository -y ppa:ondrej/nginx-mainline && \
-    add-apt-repository -y ppa:ondrej/php && \
-    rm -rf /var/lib/apt/lists/*
+    add-apt-repository -y ppa:ondrej/php
 
-## PHP extensions are a go!
+## Install s6 overlay
+RUN \
+  cd /tmp && \
+  curl https://keybase.io/justcontainers/key.asc | gpg --import && \
+  curl -LO https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz && \
+  curl -LO https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz.sig && \
+  gpg --verify s6-overlay-amd64.tar.gz.sig s6-overlay-amd64.tar.gz && \
+  tar xzf s6-overlay-amd64.tar.gz -C / && \
+  rm s6-overlay-amd64.tar.gz
+
+## Install nginx, PHP and everything else we like
 RUN \
   apt-get update && \
   apt-get install \
     nginx \
-    php7.3-fpm \
-    php7.3-cli \
-    php7.3-mysql \
-    php7.3-mysqli \
-    php7.3-memcached \
-    php7.3-curl \
-    php7.3-dom \
-    php7.3-exif \
-    php7.3-ftp \
-    php7.3-gd \
-    php7.3-iconv \
-    php7.3-mbstring \
-    php7.3-pdo \
-    php7.3-posix \
-    php7.3-soap \
-    php7.3-zip \
-    php7.3-ldap \
-    php7.3-bcmath \
-    php7.3-calendar \
-    php7.3-gettext \
-    php7.3-json \
-    php7.3-apcu \
-    php7.3-phar \
-    php7.3-sockets \
-    php7.3-tidy \
-    php7.3-wddx \
-    php7.3-xmlreader \
-    php7.3-xsl \
-    php7.3-opcache \
-    php7.3-imagick \
-    php7.3-ctype \
-    php7.3-sqlite3 \
-    php7.3-redis \
-    php7.3-intl \
-    --no-install-recommends -y && \
-    rm -rf /var/lib/apt/lists/*
+    php${PHP_VERSION}-fpm \
+    php${PHP_VERSION}-cli \
+    php${PHP_VERSION}-mysql \
+    php${PHP_VERSION}-mysqli \
+    php${PHP_VERSION}-memcached \
+    php${PHP_VERSION}-curl \
+    php${PHP_VERSION}-dom \
+    php${PHP_VERSION}-exif \
+    php${PHP_VERSION}-ftp \
+    php${PHP_VERSION}-gd \
+    php${PHP_VERSION}-iconv \
+    php${PHP_VERSION}-mbstring \
+    php${PHP_VERSION}-pdo \
+    php${PHP_VERSION}-posix \
+    php${PHP_VERSION}-soap \
+    php${PHP_VERSION}-zip \
+    php${PHP_VERSION}-ldap \
+    php${PHP_VERSION}-bcmath \
+    php${PHP_VERSION}-calendar \
+    php${PHP_VERSION}-gettext \
+    php${PHP_VERSION}-json \
+    php${PHP_VERSION}-apcu \
+    php${PHP_VERSION}-phar \
+    php${PHP_VERSION}-sockets \
+    php${PHP_VERSION}-tidy \
+    php${PHP_VERSION}-wddx \
+    php${PHP_VERSION}-xmlreader \
+    php${PHP_VERSION}-xsl \
+    php${PHP_VERSION}-opcache \
+    php${PHP_VERSION}-imagick \
+    php${PHP_VERSION}-ctype \
+    php${PHP_VERSION}-sqlite3 \
+    php${PHP_VERSION}-redis \
+    php${PHP_VERSION}-intl \
+    --no-install-recommends -y
 
-## Add Composer globally
+# Add wait-for-it
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /bin/wait-for-it.sh
+RUN chmod +x /bin/wait-for-it.sh
+
+## Add global Composer
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && chmod a+x /usr/local/bin/composer
@@ -69,35 +83,32 @@ RUN apt-get install curl --no-install-recommends -y && \
   | tee -a /etc/apt/sources.list.d/atatus-php-agent.list && \
   apt-get update && \
   apt-get install atatus-php-agent --no-install-recommends -y && \
-  apt-get remove curl -y && \
-  rm -rf /var/lib/apt/lists/*
+  apt-get remove curl -y
 
-# supervisor definitions for running nginx and php
-ADD conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
-ADD conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
+# s6 supervisor configs
+COPY conf/s6/services/nginx/run /etc/services.d/nginx/run
+COPY conf/s6/services/php-fpm/run /etc/services.d/php-fpm/run
+RUN find /etc/services.d/ -type f -exec chmod 755 -- {} +
 
 # Entrypoint and runner scripts
-ADD scripts/boot.sh /boot.sh
-ADD scripts/boot-web.sh /boot-web.sh
-ADD scripts/boot-worker.sh /boot-worker.sh
+ADD scripts/boot*sh /
+RUN chmod +x /boot*sh
 
 # Modify PHP-FPM configuration files to set common properties and listen on socket
-#RUN sed -i "s/;date.timezone =.*/date.timezone = UTC/" /etc/php/7.3/cli/php.ini
-#RUN sed -i "s/;date.timezone =.*/date.timezone = UTC/" /etc/php/7.3/fpm/php.ini
-##RUN sed -i "s/display_errors = Off/display_errors = On/" /etc/php/7.3/fpm/php.ini
-#RUN sed -i "s/upload_max_filesize = .*/upload_max_filesize = 100M/" /etc/php/7.3/fpm/php.ini
-#RUN sed -i "s/post_max_size = .*/post_max_size = 12M/" /etc/php/7.3/fpm/php.ini
-#RUN sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/7.3/fpm/php.ini
-#RUN sed -i -e "s/pid =.*/pid = \/var\/run\/php7.3-fpm.pid/" /etc/php/7.3/fpm/php-fpm.conf
-#RUN sed -i -e "s/error_log =.*/error_log = \/proc\/self\/fd\/2/" /etc/php/7.3/fpm/php-fpm.conf
-## RUN sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php/7.1/fpm/php-fpm.conf
-##RUN sed -i "s/listen = .*/listen = \/var\/run\/php\/php7.1-fpm.sock/" /etc/php/7.3/fpm/pool.d/www.conf
-##RUN sed -i "s/;catch_workers_output = .*/catch_workers_output = yes/" /etc/php/7.3/fpm/pool.d/www.conf
-RUN sed -i "s/listen = .*/listen = \/var\/run\/php7.3-fpm.sock/" /etc/php/7.3/fpm/pool.d/www.conf
-RUN sed -i -e "s/pid =.*/pid = \/var\/run\/php7.3-fpm.pid/" /etc/php/7.3/fpm/php-fpm.conf
+RUN \
+  sed -i "s/;date.timezone =.*/date.timezone = UTC/" /etc/php/${PHP_VERSION}/cli/php.ini && \
+  sed -i "s/;date.timezone =.*/date.timezone = UTC/" /etc/php/${PHP_VERSION}/fpm/php.ini && \
+  sed -i "s/display_errors = Off/display_errors = On/" /etc/php/${PHP_VERSION}/cli/php.ini && \
+  sed -i "s/upload_max_filesize = .*/upload_max_filesize = 100M/" /etc/php/${PHP_VERSION}/fpm/php.ini && \
+  sed -i "s/post_max_size = .*/post_max_size = 12M/" /etc/php/${PHP_VERSION}/fpm/php.ini && \
+  sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/${PHP_VERSION}/fpm/php.ini && \
+  sed -i -e "s/error_log =.*/error_log = \/proc\/self\/fd\/2/" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
+  sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
+  sed -i "s/;catch_workers_output = .*/catch_workers_output = yes/" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+  sed -i "s/listen = .*/listen = \/var\/run\/php-fpm.sock/" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+  sed -i -e "s/pid =.*/pid = \/var\/run\/php-fpm.pid/" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
 
-RUN chmod +x /boot.sh && \
-  chmod +x /boot-web.sh && \
-  chmod +x /boot-worker.sh
+# Clean stuff up
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENTRYPOINT [ "/boot.sh" ]
+ENTRYPOINT [ "/init" ]
