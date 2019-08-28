@@ -8,6 +8,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN \
   apt-get update && \
   apt-get install \
+    cron \
     curl \
     gpg-agent \
     software-properties-common \
@@ -92,9 +93,13 @@ RUN \
   sed -i -e 's|atatus.collector.log_file = "/var/log/atatus/collector.log"|atatus.collector.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini
 
 # s6 overlay configs
+COPY conf/s6/services/cron/run /etc/services.d/cron/run
 COPY conf/s6/services/nginx/run /etc/services.d/nginx/run
 COPY conf/s6/services/php-fpm/run /etc/services.d/php-fpm/run
-RUN find /etc/services.d/ -type f -exec chmod 755 -- {} +
+COPY conf/s6/cont-init/001-boot-web.sh /etc/cont-init.d/
+RUN \
+  find /etc/services.d/ -type f -exec chmod 755 -- {} + && \
+  find /etc/cont-init.d/ -type f -exec chmod 755 -- {} +
 
 # Entrypoint and runner scripts
 ADD scripts/boot*sh /
@@ -102,8 +107,8 @@ RUN chmod +x /boot*sh
 
 # symlink PHP CLI php.ini to the FPM one
 RUN \
-  rm -f /etc/php/${PHP_VERSION}/cli/php.ini && \
-  ln -s /etc/php/${PHP_VERSION}/cli/php.ini /etc/php/${PHP_VERSION}/fpm/php.ini
+  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
+  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini
 
 # Modify PHP-FPM configuration files to set common properties and listen on socket
 RUN \
