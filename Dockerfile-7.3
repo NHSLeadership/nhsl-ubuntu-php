@@ -100,11 +100,14 @@ RUN find /etc/services.d/ -type f -exec chmod 755 -- {} +
 ADD scripts/boot*sh /
 RUN chmod +x /boot*sh
 
+# symlink PHP CLI php.ini to the FPM one
+RUN \
+  rm -f /etc/php/${PHP_VERSION}/cli/php.ini && \
+  ln -s /etc/php/${PHP_VERSION}/cli/php.ini /etc/php/${PHP_VERSION}/fpm/php.ini
+
 # Modify PHP-FPM configuration files to set common properties and listen on socket
 RUN \
-  sed -i "s|;date.timezone =.*|date.timezone = UTC|" /etc/php/${PHP_VERSION}/cli/php.ini && \
   sed -i "s|;date.timezone =.*|date.timezone = UTC|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
-  sed -i "s|display_errors = Off|display_errors = On|" /etc/php/${PHP_VERSION}/cli/php.ini && \
   sed -i "s|upload_max_filesize = .*|upload_max_filesize = 100M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|post_max_size = .*|post_max_size = 12M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|;cgi.fix_pathinfo=1|cgi.fix_pathinfo=0|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
