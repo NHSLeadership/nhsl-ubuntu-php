@@ -1,4 +1,4 @@
 #!/usr/bin/with-contenv sh
 set -e;
 
-/usr/sbin/php-fpm${PHP_VERSION} --nodaemonize --fpm-config /etc/php/7.3/fpm/php-fpm.conf
+/usr/sbin/php-fpm${PHP_VERSION} --nodaemonize --fpm-config /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
