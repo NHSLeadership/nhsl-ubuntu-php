@@ -15,7 +15,8 @@ RUN \
     tzdata \
     --no-install-recommends -y && \
     add-apt-repository -y ppa:ondrej/nginx-mainline && \
-    add-apt-repository -y ppa:ondrej/php
+    add-apt-repository -y ppa:ondrej/php && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ## Install s6 overlay
 RUN \
@@ -25,7 +26,8 @@ RUN \
   curl -LO https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz.sig && \
   gpg --verify s6-overlay-amd64.tar.gz.sig s6-overlay-amd64.tar.gz && \
   tar xzf s6-overlay-amd64.tar.gz -C / && \
-  rm s6-overlay-amd64.tar.gz
+  rm s6-overlay-amd64.tar.gz && \
+  rm s6-overlay-amd64.tar.gz.sig
 
 ## Install nginx, PHP and everything else we like
 RUN \
