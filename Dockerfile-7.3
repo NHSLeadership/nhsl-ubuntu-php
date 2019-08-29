@@ -5,6 +5,7 @@ ENV S6_OVERLAY_VERSION 1.22.1.0
 ENV PHP_VERSION 7.3
 ENV DEBIAN_FRONTEND noninteractive
 
+# Install useful packages and Nginx/PHP
 RUN \
   apt-get update && \
   apt-get install \
@@ -12,25 +13,9 @@ RUN \
     curl \
     gpg-agent \
     software-properties-common \
-    tzdata \
     --no-install-recommends -y && \
-    add-apt-repository -y ppa:ondrej/nginx-mainline && \
-    add-apt-repository -y ppa:ondrej/php && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-## Install s6 overlay
-RUN \
-  cd /tmp && \
-  curl https://keybase.io/justcontainers/key.asc | gpg --import && \
-  curl -LO https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz && \
-  curl -LO https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz.sig && \
-  gpg --verify s6-overlay-amd64.tar.gz.sig s6-overlay-amd64.tar.gz && \
-  tar xzf s6-overlay-amd64.tar.gz -C / && \
-  rm s6-overlay-amd64.tar.gz && \
-  rm s6-overlay-amd64.tar.gz.sig
-
-## Install nginx, PHP and everything else we like
-RUN \
+  add-apt-repository -y ppa:ondrej/nginx-mainline && \
+  add-apt-repository -y ppa:ondrej/php && \
   apt-get update && \
   apt-get install \
     nginx \
@@ -68,11 +53,19 @@ RUN \
     php${PHP_VERSION}-sqlite3 \
     php${PHP_VERSION}-redis \
     php${PHP_VERSION}-intl \
-    --no-install-recommends -y
+    --no-install-recommends -y && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Add wait-for-it
-ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /bin/wait-for-it.sh
-RUN chmod +x /bin/wait-for-it.sh
+## Install s6 overlay
+RUN \
+  cd /tmp && \
+  curl https://keybase.io/justcontainers/key.asc | gpg --import && \
+  curl -LO https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz && \
+  curl -LO https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz.sig && \
+  gpg --verify s6-overlay-amd64.tar.gz.sig s6-overlay-amd64.tar.gz && \
+  tar xzf s6-overlay-amd64.tar.gz -C / && \
+  rm s6-overlay-amd64.tar.gz && \
+  rm s6-overlay-amd64.tar.gz.sig
 
 ## Add global Composer
 RUN curl -sS https://getcomposer.org/installer | php \
@@ -88,28 +81,18 @@ RUN apt-get install curl --no-install-recommends -y && \
   apt-get install atatus-php-agent --no-install-recommends -y && \
   apt-get remove curl -y
 
-# Configure some Atatus defaults
-RUN \
-  sed -i -e 's|atatus.trace.response_time = 2000|atatus.trace.response_time = 1500|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini && \
-  sed -i -e 's|atatus.agent.log_file = "/var/log/atatus/agent.log"|atatus.agent.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini && \
-  sed -i -e 's|atatus.collector.log_file = "/var/log/atatus/collector.log"|atatus.collector.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini
-
 # s6 overlay configs
-COPY conf/s6/services/cron/run /etc/services.d/cron/run
-COPY conf/s6/services/nginx/run /etc/services.d/nginx/run
-COPY conf/s6/services/php-fpm/run /etc/services.d/php-fpm/run
-COPY conf/s6/cont-init/001-boot-web.sh /etc/cont-init.d/
+COPY conf/s6/services/ /etc/services.d/
+COPY conf/s6/cont-init/ /etc/cont-init.d/
 RUN \
   find /etc/services.d/ -type f -exec chmod 755 -- {} + && \
   find /etc/cont-init.d/ -type f -exec chmod 755 -- {} +
 
-# symlink PHP CLI php.ini to the FPM one
-RUN \
-  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
-  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini
-
+# symlink so PHP CLI and FPM use the same php.ini
 # Modify PHP-FPM configuration files to set common properties and listen on socket
 RUN \
+  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
+  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
   sed -i "s|;date.timezone =.*|date.timezone = UTC|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|upload_max_filesize = .*|upload_max_filesize = 100M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|post_max_size = .*|post_max_size = 12M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \

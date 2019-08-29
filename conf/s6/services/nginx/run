@@ -1,7 +1,8 @@
-#!/usr/bin/with-contenv sh
+#!/usr/bin/with-contenv bash
 set -e;
 
 # Give PHP 10 seconds to start before Nginx, otherwise we'll fail
 #/bin/wait-for-it.sh -t 10 127.0.0.1:9000 - commented because we're using a socket
+# maybe add something similar to wait-for-it in future?
 
 /usr/sbin/nginx -g "daemon off;"

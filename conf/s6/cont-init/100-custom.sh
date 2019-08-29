@@ -6,16 +6,16 @@ set -e
 # before the application is running.
 
 if [ -f /startup-all.sh ]; then
-    printf "%-30s %-30s\n" "Startup Script:" "Running"
+    printf "\e[1;34m%-30s\e[m %-30s\n" "Startup Script:" "Running"
     chmod +x /startup-all.sh && ./startup-all.sh
 fi
 
 if [ -f /startup-web.sh ] && [ "$CONTAINERROLE" == "web" ]; then
-    printf "%-30s %-30s\n" "Startup Script:" "Running"
+    printf "\e[1;34m%-30s\e[m %-30s\n" "Startup Script:" "Running"
     chmod +x /startup-web.sh && ./startup-web.sh
 fi
 
 if [ -f /startup-worker.sh ] && [ "$CONTAINERROLE" == "worker"]; then
-    printf "%-30s %-30s\n" "Worker Startup Script:" "Running"
+    printf "\e[1;34m%-30s\e[m %-30s\n" "Worker Startup Script:" "Running"
     chmod +x /startup-worker.sh && ./startup-worker.sh
 fi

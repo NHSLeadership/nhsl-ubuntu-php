@@ -8,14 +8,14 @@ set -e
 
 # Cron
 # If DISABLE_CRON is set:
-if [ ! -z "$DISABLE_CRON" ]; then
-    # Disabled
-    printf "%-30s %-30s\n" "Cron:" "Disabled"
-fi
+#if [ ! -z "$DISABLE_CRON" ]; then
+#    # Disabled
+#    printf "\e[1;34m%-30s\e[m %-30s\n" "Cron:" "Disabled"
+#fi
 
 # If not set, enable monitoring:
-if [ -z "$DISABLE_CRON" ]; then
-    # Enabled
-    printf "%-30s %-30s\n" "Cron:" "Enabled"
-    cp /etc/supervisor.d/cron.conf /etc/supervisord-enabled/
-fi
+#if [ -z "$DISABLE_CRON" ]; then
+#    # Enabled
+#    printf "\e[1;34m%-30s\e[m %-30s\n" "Cron:" "Enabled"
+#    cp /etc/supervisor.d/cron.conf /etc/supervisord-enabled/
+#fi
