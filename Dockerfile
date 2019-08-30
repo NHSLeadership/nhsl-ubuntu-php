@@ -90,6 +90,9 @@ RUN \
   find /etc/services.d/ -type f -exec chmod 755 -- {} + && \
   find /etc/cont-init.d/ -type f -exec chmod 755 -- {} +
 
+# Nginx config
+COPY conf/nginx/ /etc/nginx/
+
 # symlink so PHP CLI and FPM use the same php.ini
 # Modify PHP-FPM configuration files to set common properties and listen on socket
 RUN \
@@ -108,7 +111,7 @@ RUN \
 # Clean stuff up
 RUN \
   apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-  mkdir /src && \
+  mkdir -p /src/public && \
   chown -R www-data:www-data /src
 
 ENTRYPOINT [ "/init" ]

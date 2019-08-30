@@ -5,4 +5,6 @@ set -e;
 #/bin/wait-for-it.sh -t 10 127.0.0.1:9000 - commented because we're using a socket
 # maybe add something similar to wait-for-it in future?
 
-/usr/sbin/nginx -g "daemon off;"
+# /usr/sbin/nginx -g "daemon off;" --- daemon off is set in config file instead
+
+/usr/sbin/nginx
