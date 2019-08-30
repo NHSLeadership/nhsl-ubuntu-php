@@ -1,8 +1,10 @@
 FROM ubuntu:bionic
 LABEL maintainer="devops@nhsx.uk"
 
+ARG PHPV
+
 ENV S6_OVERLAY_VERSION 1.22.1.0
-ENV PHP_VERSION 7.3
+ENV PHP_VERSION $PHPV
 ENV DEBIAN_FRONTEND noninteractive
 
 # Install useful packages and Nginx/PHP
