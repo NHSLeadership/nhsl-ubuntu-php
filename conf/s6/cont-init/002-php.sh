@@ -1,6 +1,10 @@
 #!/usr/bin/with-contenv sh
 set -e
 
+### Set healthz checker
+sed -i -e "s|;ping.path = /ping|ping.path = /healthz|g" /etc/php/$PHP_VERSION/fpm/pool.d/www.conf
+sed -i -e "s|;ping.response = pong|ping.response = OK|g" /etc/php/$PHP_VERSION/fpm/pool.d/www.conf
+
 ### Set PHP memory max
 if [ ! -z "$PHP_MEMORY_MAX" ]; then
   sed -i -e "s#memory_limit = 128M#memory_limit = ${PHP_MEMORY_MAX}M#g" /etc/php/$PHP_VERSION/fpm/php.ini
