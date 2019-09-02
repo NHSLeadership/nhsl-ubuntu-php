@@ -7,7 +7,7 @@ if [ ! -z "$PHP_MEMORY_MAX" ]; then
 fi
 printf "\e[1;34m%-30s\e[m %-30s\n" "PHP Memory Max:" "`php -r 'echo ini_get("memory_limit");'`"
 
-### PHP Opcache 
+### PHP Opcache
 if [ -z "$DISABLE_OPCACHE" ]; then
   # enable opcache
   printf "\e[1;34m%-30s\e[m %-30s\n" "PHP Opcache:" "Enabled"

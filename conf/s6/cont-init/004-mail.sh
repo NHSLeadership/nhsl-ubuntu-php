@@ -26,4 +26,4 @@ if [ -z "$MAIL_PORT" ]; then
 fi
 
 printf "\e[1;34m%-30s\e[m %-30s\n" "SMTP:" "$MAIL_HOST:$MAIL_PORT"
-sed -i -e "s#sendmail_path = /usr/sbin/sendmail -t -i#sendmail_path = /usr/sbin/sendmail -t -i -S $MAIL_HOST:$MAIL_PORT#g" /etc/php/$PHP_VERSION/fpm/php.ini
+sed -i -e "s|sendmail_path = /usr/sbin/sendmail -t -i|sendmail_path = /usr/sbin/sendmail -t -i -S $MAIL_HOST:$MAIL_PORT|g" /etc/php/$PHP_VERSION/fpm/php.ini
