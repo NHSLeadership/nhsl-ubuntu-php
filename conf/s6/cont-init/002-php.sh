@@ -2,7 +2,8 @@
 set -e
 
 ### set php var order
-sed -i -e "s|variables_order = \"GPCS\"|variables_order = \"EGPCS\"|g" /etc/php/$PHP_VERSION/fpm/php.ini
+printf "SETTING VARIABLES ORDER"
+sed -i -e 's|variables_order = "GPCS"|variables_order = "EGPCS"|g' /etc/php/$PHP_VERSION/fpm/php.ini
 
 ### Set healthz checker
 sed -i -e "s|;ping.path = /ping|ping.path = /healthz|g" /etc/php/$PHP_VERSION/fpm/pool.d/www.conf
@@ -45,11 +46,11 @@ fi
 # If set
 if [ ! -z "$PHP_SESSION_STORE" ]; then
     # Figure out which session save handler is in use, currently only supports redis
-    if [ $PHP_SESSION_STORE == 'redis' ] || [ $PHP_SESSION_STORE == 'REDIS' ]; then
-        if [ -z $PHP_SESSION_STORE_REDIS_HOST ]; then
+    if [ "$PHP_SESSION_STORE" == 'redis' ] || [ "$PHP_SESSION_STORE" == 'REDIS' ]; then
+        if [ -z "$PHP_SESSION_STORE_REDIS_HOST" ]; then
             PHP_SESSION_STORE_REDIS_HOST='redis'
         fi
-        if [ -z $PHP_SESSION_STORE_REDIS_PORT ]; then
+        if [ -z "$PHP_SESSION_STORE_REDIS_PORT" ]; then
             PHP_SESSION_STORE_REDIS_PORT='6379'
         fi
         printf "\e[1;34m%-30s\e[m %-30s\n" "PHP Sessions:" "Redis"
