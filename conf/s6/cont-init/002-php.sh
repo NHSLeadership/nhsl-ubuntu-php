@@ -5,6 +5,9 @@ set -e
 printf "SETTING VARIABLES ORDER"
 sed -i -e 's|variables_order = "GPCS"|variables_order = "EGPCS"|g' /etc/php/$PHP_VERSION/fpm/php.ini
 
+### stop clear_env
+sed -i -e 's|;clear_env = no|clear_env = no|g' /etc/php/$PHP_VERSION/fpm/pool.d/www.conf
+
 ### Set healthz checker
 sed -i -e "s|;ping.path = /ping|ping.path = /healthz|g" /etc/php/$PHP_VERSION/fpm/pool.d/www.conf
 sed -i -e "s|;ping.response = pong|ping.response = OK|g" /etc/php/$PHP_VERSION/fpm/pool.d/www.conf

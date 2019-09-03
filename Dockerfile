@@ -16,11 +16,13 @@ RUN \
     gpg-agent \
     software-properties-common \
     --no-install-recommends -y && \
-  add-apt-repository -y ppa:ondrej/nginx-mainline && \
+#  add-apt-repository -y ppa:ondrej/nginx-mainline && \
   add-apt-repository -y ppa:ondrej/php && \
+  curl https://openresty.org/package/pubkey.gpg | apt-key add - && \
+  add-apt-repository -y "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main" && \
   apt-get update && \
   apt-get install \
-    nginx \
+    openresty \
     php${PHP_VERSION}-fpm \
     php${PHP_VERSION}-cli \
     php${PHP_VERSION}-mysql \
@@ -91,7 +93,7 @@ RUN \
   find /etc/cont-init.d/ -type f -exec chmod 755 -- {} +
 
 # Nginx config
-COPY conf/nginx/ /etc/nginx/
+COPY conf/nginx/ /etc/openresty/
 
 # symlink so PHP CLI and FPM use the same php.ini
 # Modify PHP-FPM configuration files to set common properties and listen on socket

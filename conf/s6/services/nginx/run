@@ -7,4 +7,4 @@ set -e;
 
 # /usr/sbin/nginx -g "daemon off;" --- daemon off is set in config file instead
 
-/usr/sbin/nginx
+#/usr/sbin/nginx
