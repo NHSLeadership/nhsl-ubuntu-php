@@ -93,7 +93,7 @@ RUN \
   find /etc/cont-init.d/ -type f -exec chmod 755 -- {} +
 
 # Nginx config
-COPY conf/nginx/ /etc/openresty/
+COPY conf/openresty/ /etc/openresty/
 
 # symlink so PHP CLI and FPM use the same php.ini
 # Modify PHP-FPM configuration files to set common properties and listen on socket

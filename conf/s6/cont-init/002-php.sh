@@ -1,8 +1,7 @@
-#!/usr/bin/with-contenv sh
+#!/usr/bin/with-contenv bash
 set -e
 
 ### set php var order
-printf "SETTING VARIABLES ORDER"
 sed -i -e 's|variables_order = "GPCS"|variables_order = "EGPCS"|g' /etc/php/$PHP_VERSION/fpm/php.ini
 
 ### stop clear_env
