@@ -5,24 +5,29 @@ ARG PHPV
 
 ENV S6_OVERLAY_VERSION 1.22.1.0
 ENV PHP_VERSION $PHPV
+ENV WEBSRV openresty
 ENV DEBIAN_FRONTEND noninteractive
 
-# Install useful packages and Nginx/PHP
+# copy in apt repos for openresty, nginx, php
+COPY conf/etc/apt/sources.list.d/ /etc/apt/sources.list.d/
+
+# Install useful packages
 RUN \
   apt-get update && \
   apt-get install \
+    ca-certificates \
     cron \
     curl \
     gpg-agent \
-    software-properties-common \
+    gnupg \
     --no-install-recommends -y && \
-#  add-apt-repository -y ppa:ondrej/nginx-mainline && \
-  add-apt-repository -y ppa:ondrej/php && \
-  curl https://openresty.org/package/pubkey.gpg | apt-key add - && \
-  add-apt-repository -y "deb http://openresty.org/package/ubuntu $(lsb_release -sc) main" && \
+  cd /etc/apt/sources.list.d && \
+  for f in *.new; do mv $f `basename $f .new`.list; done && \
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C && \
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 2E61F1063ED1B4FD && \
   apt-get update && \
   apt-get install \
-    openresty \
+    ${WEBSRV} \
     php${PHP_VERSION}-fpm \
     php${PHP_VERSION}-cli \
     php${PHP_VERSION}-mysql \
@@ -92,8 +97,8 @@ RUN \
   find /etc/services.d/ -type f -exec chmod 755 -- {} + && \
   find /etc/cont-init.d/ -type f -exec chmod 755 -- {} +
 
-# Nginx config
-COPY conf/openresty/ /etc/openresty/
+# Web server config
+COPY conf/$WEBSRV/ /etc/$WEBSRV/
 
 # symlink so PHP CLI and FPM use the same php.ini
 # Modify PHP-FPM configuration files to set common properties and listen on socket
