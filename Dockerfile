@@ -21,8 +21,10 @@ RUN \
     ca-certificates \
     cron \
     curl \
+    git \
     gpg-agent \
     gnupg \
+    ssh \
     --no-install-recommends -y && \
   cd /etc/apt/sources.list.d && \
   # we have .new rename to .list so not picked up until they can be validated
