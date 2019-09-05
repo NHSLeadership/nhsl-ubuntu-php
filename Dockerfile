@@ -113,8 +113,8 @@ RUN \
   sed -i "s|;catch_workers_output = .*|catch_workers_output = yes|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i "s|listen = .*|listen = \/var\/run\/php-fpm.sock|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i -e "s|pid =.*|pid = \/var\/run\/php-fpm.pid|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
-  sed -i "s|user = www-data|user = nobody|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
-  sed -i "s|group = www-data|group = nogroup|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
+  sed -i "s|user = www-data|user = nobody|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+  sed -i "s|group = www-data|group = nogroup|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   mkdir -p /src/public && \
   chown -R nobody:nogroup /src
 
