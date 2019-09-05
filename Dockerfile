@@ -101,9 +101,9 @@ COPY conf/$WEBSRV/ /etc/$WEBSRV/
 
 # symlink so PHP CLI and FPM use the same php.ini
 # Modify PHP-FPM configuration files to set common properties and listen on socket
+#  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
+#  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
 RUN \
-  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
-  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
   sed -i "s|;date.timezone =.*|date.timezone = UTC|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|upload_max_filesize = .*|upload_max_filesize = 100M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|post_max_size = .*|post_max_size = 12M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
@@ -113,7 +113,9 @@ RUN \
   sed -i "s|;catch_workers_output = .*|catch_workers_output = yes|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i "s|listen = .*|listen = \/var\/run\/php-fpm.sock|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i -e "s|pid =.*|pid = \/var\/run\/php-fpm.pid|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
+  sed -i "s|user = www-data|user = nobody|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
+  sed -i "s|group = www-data|group = nogroup|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
   mkdir -p /src/public && \
-  chown -R www-data:www-data /src
+  chown -R nobody:nogroup /src
 
 ENTRYPOINT [ "/init" ]
