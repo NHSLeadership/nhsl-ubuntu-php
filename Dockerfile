@@ -10,6 +10,7 @@ ENV WEBSRV=openresty
 
 # copy in apt repos for openresty, nginx, php
 COPY conf/etc/apt/sources.list.d/ /etc/apt/sources.list.d/
+COPY php-redis_4.2.0-1_amd64.deb /
 
 RUN \
   # Install basic packages
@@ -65,9 +66,11 @@ RUN \
     php${PHP_VERSION}-imagick \
     php${PHP_VERSION}-ctype \
     php${PHP_VERSION}-sqlite3 \
-    php${PHP_VERSION}-redis \
     php${PHP_VERSION}-intl \
     --no-install-recommends -y && \
+    # We have to install an old version of php-redis due to bug. See https://github.com/phpredis/phpredis/issues/1620
+    #    when fix then add php${PHP_VERSION}-redis back in above.
+    if [ $PHP_VERSION = "7.2" ]; then dpkg -i /php-redis_4.2.0-1_amd64.deb; else apt-get install php-redis --no-install-recommends -y; fi && \
     # Install s6 overlay
     cd /tmp && \
       curl https://keybase.io/justcontainers/key.asc | gpg --import && \
