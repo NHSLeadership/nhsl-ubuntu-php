@@ -2,11 +2,11 @@ FROM ubuntu:bionic
 LABEL maintainer="devops@nhsx.uk"
 
 ARG PHPV
+ARG DEBIAN_FRONTEND=noninteractive
 
-ENV S6_OVERLAY_VERSION 1.22.1.0
-ENV PHP_VERSION $PHPV
-ENV WEBSRV openresty
-ENV DEBIAN_FRONTEND noninteractive
+ENV S6_OVERLAY_VERSION=1.22.1.0
+ENV PHP_VERSION=$PHPV
+ENV WEBSRV=openresty
 
 # copy in apt repos for openresty, nginx, php
 COPY conf/etc/apt/sources.list.d/ /etc/apt/sources.list.d/
@@ -14,6 +14,8 @@ COPY conf/etc/apt/sources.list.d/ /etc/apt/sources.list.d/
 RUN \
   # Install basic packages
   apt-get update && \
+  apt-get upgrade -y && \
+  apt-get dist-upgrade -y && \
   apt-get install \
     ca-certificates \
     cron \
