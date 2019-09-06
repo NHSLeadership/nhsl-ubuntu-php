@@ -26,21 +26,19 @@ else
   # disable opcache
   printf "\e[1;34m%-30s\e[m %-30s\n" "PHP Opcache:" "Disabled"
   sed -i -e "s#opcache.enable=1#opcache.enable=0#g" /etc/php/$PHP_VERSION/fpm/php.ini
-  sed -i -e "s#opcache.enable_cli=1#opcache.enable_cli=0#g" etc/php/$PHP_VERSION/fpm/php.ini
+  sed -i -e "s#opcache.enable_cli=1#opcache.enable_cli=0#g" /etc/php/$PHP_VERSION/fpm/php.ini
 fi
 # PHP Opcache Memory
 if [ ! -z "$PHP_OPCACHE_MEMORY" ]; then
   # if php_opcache_memory is set
-  sed -i -e "s#opcache.memory_consumption=16#opcache.memory_consumption=${PHP_OPCACHE_MEMORY}#g" etc/php/$PHP_VERSION/fpm/php.ini
+  sed -i -e "s#opcache.memory_consumption=16#opcache.memory_consumption=${PHP_OPCACHE_MEMORY}#g" /etc/php/$PHP_VERSION/fpm/php.ini
 fi
 printf "\e[1;34m%-30s\e[m %-30s\n" "Opcache Memory Max:" "`php -r 'echo ini_get("opcache.memory_consumption");'`M"
 
 ###
 ### Set PHP errors on in QA only.
 ###
-if [ "$ENVIRONMENT" = "production" ]; then
-  sed -i "s|display_errors = Off|display_errors = On|" /etc/php/${PHP_VERSION}/cli/php.ini
-else
+if [ "$ENVIRONMENT" != "production" ]; then
   sed -i "s|display_errors = Off|display_errors = On|" /etc/php/${PHP_VERSION}/cli/php.ini
 fi
 
@@ -48,7 +46,7 @@ fi
 # If set
 if [ ! -z "$PHP_SESSION_STORE" ]; then
     # Figure out which session save handler is in use, currently only supports redis
-    if [ "$PHP_SESSION_STORE" == 'redis' ] || [ "$PHP_SESSION_STORE" == 'REDIS' ]; then
+    if [ "$PHP_SESSION_STORE" == "redis" ] || [ "$PHP_SESSION_STORE" == "redis" ]; then
         if [ -z "$PHP_SESSION_STORE_REDIS_HOST" ]; then
             PHP_SESSION_STORE_REDIS_HOST='redis'
         fi

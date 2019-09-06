@@ -2,7 +2,7 @@
 set -e
 
 # Set SMTP settings
-if [ "$ENVIRONMENT" = "production" ]; then
+if [ "$ENVIRONMENT" == "production" ]; then
     if [ -z "$MAIL_HOST" ]; then
         export MAIL_HOST=master-smtp.smtp-production
     fi
@@ -11,7 +11,7 @@ if [ "$ENVIRONMENT" = "production" ]; then
     fi
 fi
 
-if [ "$ENVIRONMENT" = "qa" ]; then
+if [ "$ENVIRONMENT" == "qa" ]; then
     if [ -z "$MAIL_HOST" ]; then
         export MAIL_HOST=master-smtp.mailhog-production
     fi

@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv sh
+#!/usr/bin/with-contenv bash
 set -e
 
 # If the user wants to add some custom scripts to run at container runtime
@@ -7,21 +7,21 @@ set -e
 
 if [ -f /startup-all.sh ]; then
     printf "\e[1;34m%-30s\e[m %-30s\n" "Startup Script:" "Running"
-    chmod +x /startup-all.sh && ./startup-all.sh
+    chmod a+x /startup-all.sh && /./startup-all.sh
 else
     printf "\e[1;34m%-30s\e[m %-30s\n" "Startup Script:" "/startup-all.sh not found"
 fi
 
 if [ -f /startup-web.sh ] && [ "$CONTAINERROLE" == "web" ]; then
     printf "\e[1;34m%-30s\e[m %-30s\n" "Startup Script:" "Running"
-    chmod +x /startup-web.sh && ./startup-web.sh
+    chmod a+x /startup-web.sh && /./startup-web.sh
 else
     printf "\e[1;34m%-30s\e[m %-30s\n" "Startup Script:" "/startup-web.sh not found"
 fi
 
 if [ -f /startup-worker.sh ] && [ "$CONTAINERROLE" == "worker"]; then
     printf "\e[1;34m%-30s\e[m %-30s\n" "Worker Startup Script:" "Running"
-    chmod +x /startup-worker.sh && ./startup-worker.sh
+    chmod a+x /startup-worker.sh && /./startup-worker.sh
 else
     printf "\e[1;34m%-30s\e[m %-30s\n" "Startup Script:" "/startup-worker.sh not found"
 fi

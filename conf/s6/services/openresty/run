@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 set -e;
 
-if [ "$WEBSRV" == "openresty" ]; then
+if [ "$WEBSRV" == "openresty" ] && [ "$CONTAINERROLE" != "worker" ]; then
      /usr/bin/openresty
 fi
