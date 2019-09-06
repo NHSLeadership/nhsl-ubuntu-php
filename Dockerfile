@@ -109,6 +109,8 @@ COPY conf/$WEBSRV/ /etc/$WEBSRV/
 #  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
 #  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
 RUN \
+  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
+  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
   sed -i "s|;date.timezone =.*|date.timezone = UTC|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|upload_max_filesize = .*|upload_max_filesize = 100M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|post_max_size = .*|post_max_size = 12M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
