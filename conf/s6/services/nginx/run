@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 set -e;
 
-if [ "$WEBSRV" == "nginx" ] && [ "$CONTAINERROLE" == "web" ]; then
-    /usr/sbin/nginx
+if [ "$WEBSRV" == "nginx" ] && [ "$CONTAINERROLE" != "worker" ]; then
+     /usr/sbin/nginx
 fi

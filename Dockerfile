@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ENV S6_OVERLAY_VERSION=1.22.1.0
 ENV PHP_VERSION=$PHPV
-ENV WEBSRV=openresty
+ENV WEBSRV=nginx
 
 # copy in apt repos for openresty, nginx, php
 COPY conf/etc/apt/sources.list.d/ /etc/apt/sources.list.d/
