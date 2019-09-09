@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv sh
-set -e
 
 ### Set Nginx config
 if [ ! -z "$NGINX_PORT" ]; then

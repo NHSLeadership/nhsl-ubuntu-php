@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv bash
-set -e
 
 printf "\033[1;34m    _   ____  _______   _        _
    / | / / / / / ___/  | |      / \   

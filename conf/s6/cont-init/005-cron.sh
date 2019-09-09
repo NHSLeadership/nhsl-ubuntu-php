@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv sh
-#set -e
 
 ###
 ### Do we really need this? s6 will only enable cron

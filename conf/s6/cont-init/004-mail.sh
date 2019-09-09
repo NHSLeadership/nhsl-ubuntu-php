@@ -1,5 +1,4 @@
-#!/usr/bin/with-contenv sh
-set -e
+#!/usr/bin/with-contenv bash
 
 # Set SMTP settings
 if [ "$ENVIRONMENT" == "production" ]; then

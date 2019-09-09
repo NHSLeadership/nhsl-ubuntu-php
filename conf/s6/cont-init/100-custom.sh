@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv bash
-set -e
 
 # If the user wants to add some custom scripts to run at container runtime
 # then we allow them to do it here, once everything else is bootstrapped but
@@ -19,7 +18,7 @@ else
     printf "\e[1;34m%-30s\e[m %-30s\n" "Startup Script:" "/startup-web.sh not found"
 fi
 
-if [ -f /startup-worker.sh ] && [ "$CONTAINERROLE" == "worker"]; then
+if [ -f /startup-worker.sh ] && [ "$CONTAINERROLE" == "worker" ]; then
     printf "\e[1;34m%-30s\e[m %-30s\n" "Worker Startup Script:" "Running"
     chmod a+x /startup-worker.sh && /./startup-worker.sh
 else

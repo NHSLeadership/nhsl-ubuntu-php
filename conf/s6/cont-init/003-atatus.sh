@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv sh
-set -e
 
 ### Configure Atatus settings
 if [ ! -z "$ATATUS_APM_LICENSE_KEY" ]; then
