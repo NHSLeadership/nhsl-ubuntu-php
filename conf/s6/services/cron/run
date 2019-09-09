@@ -6,5 +6,6 @@ if [ "$CONTAINERROLE" == "worker" ]; then
   touch /etc/crontab /etc/cron.*/*
   #exec cron -f
   export LOG_STREAM="/tmp/cronout"
-  mkfifo $$LOG_STREAM && chmod 777 $$LOG_STREAM && echo -e "$$(env | sed 's/=\\(.*\\)/=\"\\1\"/')\n$$(cat /etc/cron.d/crontab)" > /etc/cron.d/tasks && cron -f | tail -f $$LOG_STREAM"
+  #mkfifo $$LOG_STREAM && chmod 777 $$LOG_STREAM && echo -e "$$(env | sed 's/=\\(.*\\)/=\"\\1\"/')\n$$(cat /etc/cron.d/crontab)" > /etc/cron.d/tasks && cron -f | tail -f $$LOG_STREAM"
+  exec cron -f
 fi
