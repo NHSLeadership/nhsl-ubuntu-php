@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv sh
+#!/usr/bin/with-contenv bash
 
 ### Set Nginx config
 if [ ! -z "$NGINX_PORT" ]; then
@@ -15,3 +15,12 @@ else
   printf "\e[1;34m%-30s\e[m %-30s\n" "Nginx Root:" "/src/public"
 fi
 
+if [ "$HEADER_NOSNIFF" == "false" ]; then
+  sed -i -e "s|add_header X-Content-Type-Options nosniff;||g" /etc/$WEBSRV/nginx.conf
+  printf "\e[1;34m%-30s\e[m %-30s\n" "Nginx strict mime checks: " "DISABLED"
+fi
+
+if [ "$HEADER_FRAMEOPTS" == "false" ]; then
+  sed -i -e "s|add_header X-Frame-Options sameorigin;||g" /etc/$WEBSRV/nginx.conf
+  printf "\e[1;34m%-30s\e[m %-30s\n" "Nginx sameorigin frames: " "DISABLED"
+fi
