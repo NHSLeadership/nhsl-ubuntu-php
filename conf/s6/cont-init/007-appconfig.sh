@@ -13,7 +13,7 @@ NGINX_MOODLE='location ~ [^/]\.php(/|$) {\
             fastcgi_param  PATH_INFO $fastcgi_path_info;\
         }'
 
-NGINX_WP='location ~ \.php$ {\
+NGINX_WORDPRESS='location ~ \.php$ {\
             try_files $uri =404;\
             include fastcgi_params;\
             fastcgi_split_path_info ^(.+\.php)(/.+)$;\
