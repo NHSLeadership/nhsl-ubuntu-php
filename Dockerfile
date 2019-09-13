@@ -5,6 +5,7 @@ ARG PHPV
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV S6_OVERLAY_VERSION=1.22.1.0
+ENV SOCKLOG_OVERLAY_VERSION=3.1.0-2
 ENV PHP_VERSION=$PHPV
 
 # copy in apt repos for openresty, nginx, php
@@ -83,6 +84,13 @@ RUN \
       tar xzf s6-overlay-amd64.tar.gz -C / && \
       rm s6-overlay-amd64.tar.gz && \
       rm s6-overlay-amd64.tar.gz.sig && \
+    # Install socklog overlay for s6
+    curl -LO https://github.com/just-containers/socklog-overlay/releases/download/v$SOCKLOG_OVERLAY_VERSION/socklog-overlay-amd64.tar.gz && \
+    curl -LO https://github.com/just-containers/socklog-overlay/releases/download/v$SOCKLOG_OVERLAY_VERSION/socklog-overlay-amd64.tar.gz.sig && \
+    gpg --verify socklog-overlay-amd64.tar.gz.sig socklog-overlay-amd64.tar.gz && \
+    tar xzf socklog-overlay-amd64.tar.gz -C / && \
+    rm socklog-overlay-amd64.tar.gz.sig && \
+    rm socklog-overlay-amd64.tar.gz && \
     ## Add global Composer
       curl -sS https://getcomposer.org/installer | php && \
       mv composer.phar /usr/local/bin/composer && \
