@@ -4,7 +4,7 @@ A Docker image for NHS Leadership Academy based on Ubuntu Bionic.
 
 This provides Nginx, PHP, and an array of commonly used tools. It aims to be an image capable of running production environments whilst still being easy to work with.
 
-##Building
+## Building
 This image needs some Docker --build-arg statements to be able to build successfully.
 
 | Argument     | Values                 | Comments                             |
@@ -19,7 +19,7 @@ It is likely this will only work for currently supported versions of PHP as unsu
 
 The image is based on Ubuntu 18.04 Bionic, which is an LTS (Long Term Support) release. This means it has full support from Canonical until April 2023.
 
-##Using this image
+## Using this image
 
 This image has been heavily customised to fit the needs of the NHS Leadership Academy. We have large amounts of sites running [Moodle](https://moodle.org/) and [WordPress](https://wordpress.org/) and as such there is specific configuration included in this image for these CMSs. This is not to say it cannot be used for other software, it is simply included to make our lives easier.
 
@@ -38,7 +38,7 @@ When running the image, you will need to specify some environment variables for 
 | NGINX\_WEB\_ROOT | A path to the web root, e.g. `/src/wordpress` | Set the Nginx public web root. |
 | NGINX_PORT | An integer | **Default:** 80 <br /> If set, changes the Nginx port. |
 
-###Things to note when moving from previous images
+### Things to note when moving from previous images
 1. You may need to remove the `command: ["/start-worker.sh"]` line from your deployment.k8s file
 2. You will need to add a new environment variable to your worker container in deployment.k8s:
 
