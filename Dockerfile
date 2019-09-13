@@ -6,7 +6,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ENV S6_OVERLAY_VERSION=1.22.1.0
 ENV PHP_VERSION=$PHPV
-ENV WEBSRV=nginx
 
 # copy in apt repos for openresty, nginx, php
 COPY conf/etc/apt/sources.list.d/ /etc/apt/sources.list.d/
@@ -37,7 +36,7 @@ RUN \
   # start actually installing our server packages
   apt-get update && \
   apt-get install \
-    ${WEBSRV} \
+    nginx \
     php${PHP_VERSION}-fpm \
     php${PHP_VERSION}-cli \
     php${PHP_VERSION}-mysql \
@@ -104,7 +103,7 @@ RUN \
   find /etc/cont-init.d/ -type f -exec chmod 755 -- {} +
 
 # Web server config
-COPY conf/$WEBSRV/ /etc/$WEBSRV/
+COPY conf/nginx/ /etc/nginx/
 
 # symlink so PHP CLI and FPM use the same php.ini
 # Modify PHP-FPM configuration files to set common properties and listen on socket.

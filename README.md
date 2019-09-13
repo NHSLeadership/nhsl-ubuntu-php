@@ -10,7 +10,6 @@ This image needs some Docker --build-arg statements to be able to build successf
 | Argument     | Values                 | Comments                             |
 | ------------ | ---------------------- | ------------------------------------ |
 | PHPV         | `7.1`, `7.2`, `7.3`    | Specify the PHP version you require  |
-| WEBSRV       | `nginx` or `openresty` | Web server software you wish to use  |
 
 For example, if you wish to build an Nginx image running PHP 7.3 you would use:
 `docker build -t nhsleadershipacademy/nhsl-ubuntu-php:nginx-7.3 --build-arg WEBSRV=nginx --build-arg PHPV=7.3 -f Dockerfile .`
