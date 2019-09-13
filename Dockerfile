@@ -26,6 +26,7 @@ RUN \
     gnupg \
     ssh \
     nano \
+    ssmtp \
     --no-install-recommends -y && \
   cd /etc/apt/sources.list.d && \
   # we have .new rename to .list so not picked up until they can be validated
@@ -106,7 +107,9 @@ RUN \
 COPY conf/$WEBSRV/ /etc/$WEBSRV/
 
 # symlink so PHP CLI and FPM use the same php.ini
-# Modify PHP-FPM configuration files to set common properties and listen on socket
+# Modify PHP-FPM configuration files to set common properties and listen on socket.
+# We also remove /etc/ssmtp/ssmtp.conf because we don't need all that config. It gets
+# configured at container runtime in 004-mail.sh in s6.
 #  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
 #  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
 RUN \
@@ -123,6 +126,7 @@ RUN \
   sed -i -e "s|pid =.*|pid = \/var\/run\/php-fpm.pid|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
   sed -i "s|user = www-data|user = nobody|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i "s|group = www-data|group = nogroup|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+  rm -rf /etc/ssmtp/ssmtp.conf && \
   mkdir -p /src/public && \
   chown -R nobody:nogroup /src
 

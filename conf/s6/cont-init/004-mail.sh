@@ -24,5 +24,8 @@ if [ -z "$MAIL_PORT" ]; then
     export MAIL_PORT=25
 fi
 
+echo "mailhub=$MAIL_HOST:$MAIL_PORT" >> /etc/ssmtp/ssmtp.conf
+echo "root=devops@nhsx.uk" >> /etc/ssmtp/ssmtp.conf
+echo "FromLineOverride=YES" >> /etc/ssmtp/ssmtp.conf
 printf "\e[1;34m%-30s\e[m %-30s\n" "SMTP:" "$MAIL_HOST:$MAIL_PORT"
-sed -i -e "s|sendmail_path = /usr/sbin/sendmail -t -i|sendmail_path = /usr/sbin/sendmail -t -i -S $MAIL_HOST:$MAIL_PORT|g" /etc/php/$PHP_VERSION/fpm/php.ini
+sed -i -e "s|;sendmail_path =|sendmail_path = /usr/sbin/sendmail -t -i -S $MAIL_HOST:$MAIL_PORT|g" /etc/php/$PHP_VERSION/fpm/php.ini

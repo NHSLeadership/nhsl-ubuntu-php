@@ -1,31 +1,58 @@
 # nhsl-ubuntu-php
 
-A Docker for NHS Leadership Academy based on Ubuntu with Nginx mainline and PHP.
+A Docker image for NHS Leadership Academy based on Ubuntu Bionic.
 
-Want to build this? Well here you go!
-`docker build -t <repository>/<image>:<tag> -f Dockerfile . --no-cache --build-arg PHPV=<version>`
+This provides Nginx, PHP, and an array of commonly used tools. It aims to be an image capable of running production environments whilst still being easy to work with.
 
-Specify your PHP version above, e.g. 7.3
+##Building
+This image needs some Docker --build-arg statements to be able to build successfully.
 
-It is likely this will only work for supported versions of PHP as unsupported ones are removed from the repository used in this image.
+| Argument     | Values                 | Comments                             |
+| ------------ | ---------------------- | ------------------------------------ |
+| PHPV         | `7.1`, `7.2`, `7.3`    | Specify the PHP version you require  |
+| WEBSRV       | `nginx` or `openresty` | Web server software you wish to use  |
 
-The image is based on Ubuntu 18.04 Bionic, which has Long Term Support until April 2028.
+For example, if you wish to build an Nginx image running PHP 7.3 you would use:
+`docker build -t nhsleadershipacademy/nhsl-ubuntu-php:nginx-7.3 --build-arg WEBSRV=nginx --build-arg PHPV=7.3 -f Dockerfile .`
 
-## Using this image
-If you wish to make changes to the image, for example to add your application code, you should include this image at the top of your Dockerfile, doing something like:
+It is likely this will only work for currently supported versions of PHP as unsupported ones are removed from the repository used in this image.
 
-```
-FROM nhsleadership/nhsl-ubuntu-php:7.3-master
+The image is based on Ubuntu 18.04 Bionic, which is an LTS (Long Term Support) release. This means it has full support from Canonical until April 2023.
 
-COPY / /src/public/
-COPY config/custom-http.conf /etc/nginx/custom-http.conf
-```
+##Using this image
 
-## Options
-There are a few items configurable by copying files into the image.
+This image has been heavily customised to fit the needs of the NHS Leadership Academy. We have large amounts of sites running [Moodle](https://moodle.org/) and [WordPress](https://wordpress.org/) and as such there is specific configuration included in this image for these CMSs. This is not to say it cannot be used for other software, it is simply included to make our lives easier.
 
-### Nginx config
-You can add snippets into the base Nginx HTTP server config by simply copying a file into `/etc/nginx/custom/snippets.conf` - the file will automatically be included in the Nginx HTTP stanza. Alternatively you could replace the entire Nginx config by overwriting `/etc/nginx/nginx.conf` but this is highly discouraged as it will remove things like Health checks as used by Kubernetes.
+When running the image, you will need to specify some environment variables for the image it self.
+
+| Variable     | Value        | Comment      |
+| ------------ | ------------ | ------------ |
+| HEADER_NOSNIFF | `true`/`false` | **Default:** TRUE <br /> Enables or disables strict mime type checking in the browser |
+| OSSAPP | `MOODLE`/`WORDPRESS`/`OTHER` | **Default:** OTHER <br /> if set then will include customisations for running Moodle or WordPress (e.g. PHP config in Nginx) |
+| CONTAINERROLE | `web`/`worker` | **Default:** WEB <br /> Sets up the container for either serving content or running cron jobs (worker). |
+| PHP\_MEMORY\_MAX | Any integer ending M, e.g. `128M` | **Default:** 128M <br /> Sets the PHP Max Memory in Mb for executing scripts. |
+| DISABLE_OPCACHE | `true`/`false` | **Default:** TRUE <br /> Enables or disables the PHP opcache. |
+| PHP\_OPCACHE\_MEMORY | An integer | **Default:** 16 <br /> Set the amount of Mb to use for opcache memory storage. |
+| PHP\_SESSION\_STORE | `REDIS` | If set to `REDIS` PHP will store session files there rather than on the local disk. |
+| ATATUS\_APM\_LICENSE_KEY | A string containing the license key | If a license key is set, then Atatus will be enabled. |
+| NGINX\_WEB\_ROOT | A path to the web root, e.g. `/src/wordpress` | Set the Nginx public web root. |
+| NGINX_PORT | An integer | **Default:** 80 <br /> If set, changes the Nginx port. |
+
+###Things to note when moving from previous images
+1. You may need to remove the `command: ["/start-worker.sh"]` line from your deployment.k8s file
+2. You will need to add a new environment variable to your worker container in deployment.k8s:
+
+    ```
+    - name: CONTAINERROLE
+      value: worker
+    ```
+3. Nginx and PHP both run as the `nobody` user under the `nogroup` group. This may not need any changes but if you find you have permissions issues, change the group from `nobody` to `nogroup` in any `chown` statements you run.
+
+
+### Nginx config overwriting
+Modifying Nginx configuration is highly discouraged but sometimes not avoidable. If you really must overwrite the Nginx configuration then please copy it into `/startup-nginx.conf` inside the container. A script runs during container boot that will look for this file and overwrite Nginx's default configuration if needed.
+
+Please note that doing this will stop `OSSAPP` and any `NGINX_` or `HEADER_` options above from working.
 
 ### Boot scripting
 You may add scripts that run as the container boots, but before Nginx and PHP start by copying files into:
@@ -35,5 +62,3 @@ You may add scripts that run as the container boots, but before Nginx and PHP st
 `/startup-web.sh` - scripts that only run on a 'web' container
 
 `/startup-worker.sh` - scripts that only run on 'worker' containers, generally used for cron jobs
-
-### Run time variables
