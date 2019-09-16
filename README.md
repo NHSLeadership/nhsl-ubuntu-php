@@ -12,7 +12,7 @@ This image needs some Docker --build-arg statements to be able to build successf
 | PHPV         | `7.1`, `7.2`, `7.3`    | Specify the PHP version you require  |
 
 For example, if you wish to build an Nginx image running PHP 7.3 you would use:
-`docker build -t nhsleadershipacademy/nhsl-ubuntu-php:nginx-7.3 --build-arg WEBSRV=nginx --build-arg PHPV=7.3 -f Dockerfile .`
+`docker build -t nhsleadershipacademy/nhsl-ubuntu-php:nginx-7.3 --build-arg --build-arg PHPV=7.3 -f Dockerfile .`
 
 It is likely this will only work for currently supported versions of PHP as unsupported ones are removed from the repository used in this image.
 
