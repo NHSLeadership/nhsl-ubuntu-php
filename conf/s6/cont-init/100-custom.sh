@@ -30,3 +30,4 @@ if [ -f /startup-nginx.conf ]; then
   cp -fs /etc/nginx/sites-enabled/site.conf
 else
   printf "\e[1;34m%-30s\e[m %-30s\n" "Custom Nginx conf:" "Not found, using default."
+fi
