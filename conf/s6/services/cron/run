@@ -3,5 +3,6 @@
 if [ "$CONTAINERROLE" == "worker" ]; then
   # this line here is what we should have to get rid of the hard link error
   touch /etc/crontab /etc/cron.*/*
-  exec cron -f
+  env > /etc/environment
+  exec cron -f -L 0
 fi
