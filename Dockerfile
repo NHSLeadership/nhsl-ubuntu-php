@@ -134,6 +134,7 @@ RUN \
   sed -i -e "s|pid =.*|pid = \/var\/run\/php-fpm.pid|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
   sed -i "s|user = www-data|user = nobody|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i "s|group = www-data|group = nogroup|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+  rm -rf /etc/nginx/sites-enabled/default && \
   mkfifo /var/log/cronlog && \
   chmod 0777 /var/log/cronlog && \
   rm -rf /etc/ssmtp/ssmtp.conf && \
