@@ -46,6 +46,13 @@ When running the image, you will need to specify some environment variables for 
       value: worker
     ```
 3. Nginx and PHP both run as the `nobody` user under the `nogroup` group. This may not need any changes but if you find you have permissions issues, change the group from `nobody` to `nogroup` in any `chown` statements you run.
+4. Your cron should output to /var/log/cronlog and specify a user to run as that isn't root, for example:
+
+    */etc/cron.d/moodle:*
+    ```
+    * * * * * nobody /src/vendor/public/public/moodle/admin/cli/cron.php > /var/log/cronlog
+    ```
+
 
 
 ### Nginx config overwriting

@@ -1,0 +1,5 @@
+#!/usr/bin/with-contenv bash
+
+if [ "$CONTAINERROLE" == "worker" ]; then
+  tail -qf --follow=name --retry /var/log/cronlog
+fi
