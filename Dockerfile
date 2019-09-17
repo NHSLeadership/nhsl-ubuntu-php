@@ -105,6 +105,7 @@ RUN \
 
 # s6 overlay configs
 COPY conf/s6/services/ /etc/services.d/
+COPY conf/s6/fix-attrs/ /etc/fix-attrs.d/
 COPY conf/s6/cont-init/ /etc/cont-init.d/
 RUN \
   find /etc/services.d/ -type f -exec chmod 755 -- {} + && \
