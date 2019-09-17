@@ -1,6 +1,6 @@
 #!/usr/bin/with-contenv bash
 set -e;
 
-if [ "$CONTAINERROLE" != "worker" ]; then
+if [ "$CONTAINERROLE" == "web" ]; then
      /usr/sbin/nginx
 fi

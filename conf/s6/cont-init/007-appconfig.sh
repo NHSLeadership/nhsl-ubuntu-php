@@ -60,14 +60,14 @@ NGINX_LARAVEL='location / {\
 
 if [ "$OSSAPP" == "MOODLE" ]; then
   sed -i -e "s@###phpblock@$NGINX_MOODLE@g" /etc/nginx/sites-enabled/site.conf
-  printf "\e[1;34m%-30s\e[m %-30s\n" "Nginx configured for : " "MOODLE"
+  printf " %-30s %-30s\n" "Nginx configured for: " "MOODLE"
 elif [ "$OSSAPP" == "WORDPRESS" ]; then
   sed -i -e "s@###phpblock@$NGINX_WORDPRESS@g" /etc/nginx/sites-enabled/site.conf
-  printf "\e[1;34m%-30s\e[m %-30s\n" "Nginx configured for : " "WORDPRESS"
+  printf " %-30s %-30s\n" "Nginx configured for: " "WORDPRESS"
 elif [ "$OSSAPP" == "LARAVEL" ]; then
   sed -i -e "s@###phpblock@$NGINX_LARAVEL@g" /etc/nginx/sites-enabled/site.conf
-  printf "\e[1;34m%-30s\e[m %-30s\n" "Nginx configured for : " "LARAVEL"
+  printf " %-30s %-30s\n" "Nginx configured for: " "LARAVEL"
 else
   sed -i -e "s@###phpblock@$NGINX_GENERIC@g" /etc/nginx/sites-enabled/site.conf
-  printf "\e[1;34m%-30s\e[m %-30s\n" "Nginx configured for : " "GENERIC PHP APP"
+  printf " %-30s %-30s\n" "Nginx configured for: " "GENERIC PHP APP"
 fi

@@ -11,9 +11,9 @@ if [ ! -z "$ATATUS_APM_LICENSE_KEY" ] && [ "$ENVIRONMENT" == "production" ]; the
   sed -i -e "s/atatus.app_name = \"PHP App\"/atatus.app_name = \"$SITE_NAME\"/g" /etc/php/$PHP_VERSION/fpm/conf.d/atatus.ini
   sed -i -e "s/atatus.app_version = \"\"/atatus.app_version = \"$SITE_BRANCH-$BUILD\"/g" /etc/php/$PHP_VERSION/fpm/conf.d/atatus.ini
   sed -i -e "s/atatus.tags = \"\"/atatus.tags = \"$SITE_BRANCH-$BUILD, $SITE_BRANCH\"/g" /etc/php/$PHP_VERSION/fpm/conf.d/atatus.ini
-  printf "\e[1;34m%-30s\e[m %-30s\n" "Atatus:" "Enabled"
+  printf "%-30s %-30s\n" "Atatus:" "Enabled"
 else
   # Atatus - if api key is not set then disable
-  printf "\e[1;34m%-30s\e[m %-30s\n" "Atatus:" "Disabled"
+  printf " %-30s %-30s\n" "Atatus: " "Disabled"
   rm -f /etc/php/$PHP_VERSION/fpm/conf.d/atatus.ini
 fi
