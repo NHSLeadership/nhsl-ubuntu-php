@@ -28,4 +28,4 @@ echo "mailhub=$MAIL_HOST:$MAIL_PORT" >> /etc/ssmtp/ssmtp.conf
 echo "root=devops@nhsx.uk" >> /etc/ssmtp/ssmtp.conf
 echo "FromLineOverride=YES" >> /etc/ssmtp/ssmtp.conf
 printf " %-30s %-30s\n" "SMTP: " "$MAIL_HOST:$MAIL_PORT"
-sed -i -e "s|;sendmail_path =|sendmail_path = /usr/sbin/sendmail -t -i -S $MAIL_HOST:$MAIL_PORT|g" /etc/php/$PHP_VERSION/fpm/php.ini
+sed -i -e "s|;sendmail_path =|sendmail_path = /usr/sbin/ssmtp -t|g" /etc/php/$PHP_VERSION/fpm/php.ini
