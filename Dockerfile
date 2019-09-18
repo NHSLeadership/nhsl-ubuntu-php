@@ -9,7 +9,7 @@ ENV SOCKLOG_OVERLAY_VERSION=3.1.0-2
 ENV PHP_VERSION=$PHPV
 
 # copy in apt repos for openresty, nginx, php
-COPY conf/etc/apt/sources.list.d/ /etc/apt/sources.list.d/
+COPY conf/etc/apt/sources.list.d/*.new /etc/apt/sources.list.d/
 COPY php-redis_4.2.0-1_amd64.deb /
 
 RUN \
@@ -32,12 +32,15 @@ RUN \
   # we have .new rename to .list so not picked up until they can be validated
   for f in *.new; do mv $f `basename $f .new`.list; done && \
   # add keys for ondrej php/nginx and openresty PPAs
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 97992D8CFD2E2D02 && \
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C && \
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 2E61F1063ED1B4FD && \
   # start actually installing our server packages
   apt-get update && \
   apt-get install \
     nginx \
+    libnginx-mod-brotli && \
+    libnginx-mod-pagespeed && \
     php${PHP_VERSION}-fpm \
     php${PHP_VERSION}-cli \
     php${PHP_VERSION}-mysql \
