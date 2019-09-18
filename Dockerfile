@@ -39,8 +39,8 @@ RUN \
   apt-get update && \
   apt-get install \
     nginx \
-    libnginx-mod-brotli && \
-    libnginx-mod-pagespeed && \
+    libnginx-mod-brotli \
+    libnginx-mod-pagespeed \
     php${PHP_VERSION}-fpm \
     php${PHP_VERSION}-cli \
     php${PHP_VERSION}-mysql \
