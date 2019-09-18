@@ -29,7 +29,7 @@ NGINX_MOODLE='location ~ [^/]\.php(/|$) {\
 
 NGINX_WORDPRESS='location / {\
         try_files $uri $uri/ /index.php?$query_string;\
-    }
+    }\
     location ~ \.php$ {\
             try_files $uri =404;\
             include fastcgi_params;\
