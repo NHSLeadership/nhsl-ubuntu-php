@@ -36,6 +36,7 @@ When running the image, you will need to specify some environment variables for 
 | ATATUS\_APM\_LICENSE_KEY | A string containing the license key | If a license key is set, then Atatus will be enabled. |
 | NGINX\_WEB\_ROOT | A path to the web root, e.g. `/src/wordpress` | Set the Nginx public web root. |
 | NGINX_PORT | An integer | **Default:** 80 <br /> If set, changes the Nginx port. |
+| OLD_DOMAINS | Comma delimited string | If set, will setup Nginx to redirect these domains to the $DOMAIN set by Bamboo. |
 
 ### Things to note when moving from previous images
 1. You may need to remove the `command: ["/start-worker.sh"]` line from your deployment.k8s file
