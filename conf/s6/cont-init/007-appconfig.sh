@@ -27,7 +27,10 @@ NGINX_MOODLE='location ~ [^/]\.php(/|$) {\
             fastcgi_param PATH_INFO $fastcgi_path_info;\
         }'
 
-NGINX_WORDPRESS='location ~ \.php$ {\
+NGINX_WORDPRESS='location / {\
+        try_files $uri $uri/ /index.php?$query_string;\
+    }
+    location ~ \.php$ {\
             try_files $uri =404;\
             include fastcgi_params;\
             fastcgi_split_path_info ^(.+\.php)(/.+)$;\
@@ -39,7 +42,7 @@ NGINX_WORDPRESS='location ~ \.php$ {\
             fastcgi_read_timeout 600s;\
             fastcgi_request_buffering off;\
             fastcgi_param PHP_VALUE "atatus.enabled=on;";\
-        }'
+    }'
 
 NGINX_LARAVEL='location / {\
         try_files $uri $uri/ /index.php?$query_string;\
