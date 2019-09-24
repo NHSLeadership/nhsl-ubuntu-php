@@ -143,6 +143,8 @@ RUN \
   chmod 0777 /var/log/cronlog && \
   rm -rf /etc/ssmtp/ssmtp.conf && \
   mkdir -p /src/public && \
-  chown -R nobody:nogroup /src
+  chown -R nobody:nogroup /src && \
+  mkdir -p /var/ngx_pagespeed_cache && \
+  chown -R nobody:nogroup /var/ngx_pagespeed_cache
 
 ENTRYPOINT [ "/init" ]
