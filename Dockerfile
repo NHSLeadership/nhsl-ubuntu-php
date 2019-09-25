@@ -27,6 +27,8 @@ RUN \
     ssh \
     nano \
     ssmtp \
+    unzip \
+    zip \
     --no-install-recommends -y && \
   cd /etc/apt/sources.list.d && \
   # we have .new rename to .list so not picked up until they can be validated
