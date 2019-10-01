@@ -26,6 +26,7 @@ RUN \
     gnupg \
     ssh \
     nano \
+    nc \
     ssmtp \
     --no-install-recommends -y && \
   cd /etc/apt/sources.list.d && \
