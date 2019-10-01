@@ -26,7 +26,7 @@ RUN \
     gnupg \
     ssh \
     nano \
-    nc \
+    netcat \
     ssmtp \
     unzip \
     zip \
