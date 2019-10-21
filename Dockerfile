@@ -131,8 +131,8 @@ RUN \
   rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
   ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
   sed -i "s|;date.timezone =.*|date.timezone = UTC|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
-  sed -i "s|upload_max_filesize = .*|upload_max_filesize = 100M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
-  sed -i "s|post_max_size = .*|post_max_size = 12M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
+  sed -i "s|upload_max_filesize = .*|upload_max_filesize = 1G|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
+  sed -i "s|post_max_size = .*|post_max_size = 512M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|;cgi.fix_pathinfo=1|cgi.fix_pathinfo=0|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i -e "s|error_log =.*|error_log = \/proc\/self\/fd\/2|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
   sed -i -e "s|;daemonize\s*=\s*yes|daemonize = no|g" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
