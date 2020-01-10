@@ -21,16 +21,11 @@ if [ -z "$CONTAINERROLE" ]; then
   export CONTAINERROLE=web
 fi
 
-if [ "$CONTAINERROLE" == "web" ]; then
-  rm -rf /etc/services.d/cron
-  rm -rf /etc/services.d/cronlog
-fi
-
 if [ "$CONTAINERROLE" == "worker" ]; then
   echo "Running a worker pod so removing Nginx and PHP-FPM services..."
   rm -rf /etc/services.d/nginx
   rm -rf /etc/services.d/php-fpm
-  
+
   # this line here is what we should have to get rid of the hard link error with crond
   # put env vars into /etc/environment so Cron will read them automatically
   # TODO: find a better way of doing this.

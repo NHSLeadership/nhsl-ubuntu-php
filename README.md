@@ -28,7 +28,6 @@ When running the image, you will need to specify some environment variables for 
 | ------------ | ------------ | ------------ |
 | HEADER_NOSNIFF | `true`/`false` | **Default:** TRUE <br /> Enables or disables strict mime type checking in the browser |
 | OSSAPP | `MOODLE`/`WORDPRESS`/`OTHER` | **Default:** OTHER <br /> if set then will include customisations for running Moodle or WordPress (e.g. PHP config in Nginx) |
-| CONTAINERROLE | `web`/`worker` | **Default:** WEB <br /> Sets up the container for either serving content or running cron jobs (worker). |
 | PHP\_MEMORY\_MAX | Any integer ending M, e.g. `128M` | **Default:** 128M <br /> Sets the PHP Max Memory in Mb for executing scripts. |
 | DISABLE_OPCACHE | `true`/`false` | **Default:** TRUE <br /> Enables or disables the PHP opcache. |
 | PHP\_OPCACHE\_MEMORY | An integer | **Default:** 16 <br /> Set the amount of Mb to use for opcache memory storage. |

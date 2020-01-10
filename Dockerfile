@@ -19,7 +19,6 @@ RUN \
   apt-get dist-upgrade -y && \
   apt-get install \
     ca-certificates \
-    cron \
     curl \
     git \
     gpg-agent \
@@ -27,6 +26,7 @@ RUN \
     ssh \
     nano \
     netcat \
+    rsync \
     ssmtp \
     unzip \
     zip \
@@ -124,7 +124,6 @@ COPY conf/nginx/ /etc/nginx/
 # Modify PHP-FPM configuration files to set common properties and listen on socket.
 # We also remove /etc/ssmtp/ssmtp.conf because we don't need all that config. It gets
 # configured at container runtime in 004-mail.sh in s6.
-# mkfifo is used for the cron output logging.
 #  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
 #  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
 RUN \
@@ -142,8 +141,6 @@ RUN \
   sed -i "s|user = www-data|user = nobody|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i "s|group = www-data|group = nogroup|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   rm -rf /etc/nginx/sites-enabled/default && \
-  mkfifo /var/log/cronlog && \
-  chmod 0777 /var/log/cronlog && \
   rm -rf /etc/ssmtp/ssmtp.conf && \
   mkdir -p /src/public && \
   chown -R nobody:nogroup /src && \
