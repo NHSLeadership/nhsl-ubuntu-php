@@ -27,11 +27,8 @@ NGINX_MOODLE='location ~ [^/]\.php(/|$) {\
             fastcgi_param PATH_INFO $fastcgi_path_info;\
         }'
 
-NGINX_WORDPRESS='if (!-e $request_filename) {\
-        rewrite ^.*$ /index.php last;\
-    }\
-    location / {\
-        try_files $uri $uri/ /index.php?$query_string;\
+NGINX_WORDPRESS='location / {\
+        try_files $uri $uri/ /index.php?$args;\
     }\
     location ~ \.php$ {\
             try_files $uri =404;\
