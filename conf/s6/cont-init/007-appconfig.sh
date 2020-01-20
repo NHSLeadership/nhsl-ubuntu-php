@@ -31,6 +31,9 @@ NGINX_WORDPRESS='location / {\
         try_files $uri $uri/ /index.php?$query_string;\
     }\
     location ~ \.php$ {\
+            if (!-e $request_filename) {\
+              rewrite ^.*$ /index.php last;\
+            }\
             try_files $uri =404;\
             include fastcgi_params;\
             fastcgi_split_path_info ^(.+\.php)(/.+)$;\
