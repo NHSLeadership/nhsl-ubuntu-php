@@ -10,9 +10,30 @@ if [ "$ENVIRONMENT" == "production" ]; then
     fi
 fi
 
+# if in QA
 if [ "$ENVIRONMENT" == "qa" ]; then
     if [ -z "$MAIL_HOST" ]; then
         export MAIL_HOST=master-smtp.mailhog-production
+    fi
+fi
+
+# Do a quick check to see if were using an Amazon SQL DB, means were in AWS
+## TODO: Remove once GCP is finished
+if [[ "$DB_HOST" == *"eu-west-2.rds.amazonaws.com"* ]]; then
+    # if were in Production
+    if [ "$ENVIRONMENT" == "production" ]; then
+        if [ -z "$MAIL_HOST" ]; then
+           export MAIL_HOST=smtp.kube-mail
+       fi
+    fi
+    
+    # if were in staging
+    # TODO: Once we have kbuild v2 we'll remove SMTP external sending from Staging entirely
+    ## and MAIL_HOST will always be smtp.kube-mail
+    if [ "$ENVIRONMENT" == "staging" ]; then
+        if [ -z "$MAIL_HOST" ]; then
+           export MAIL_HOST=mailhog.kube-mail
+       fi
     fi
 fi
 
