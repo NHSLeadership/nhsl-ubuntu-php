@@ -23,6 +23,7 @@ RUN \
     curl \
     git \
     gpg-agent \
+    ghostscript \
     gnupg \
     ssh \
     nano \
