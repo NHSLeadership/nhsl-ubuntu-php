@@ -142,7 +142,4 @@ RUN \
   chown -R nobody:nogroup /var/ngx_pagespeed_cache && \
   chmod +x /start-container.sh
 
-COPY test.php /src/test.php
-COPY crontest /etc/cron.d/crontest
-
 CMD ["/start-container.sh"]
