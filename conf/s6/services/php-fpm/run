@@ -1,6 +1,0 @@
-#!/usr/bin/with-contenv bash
-set -e;
-
-if [ "$CONTAINERROLE" == "web" ]; then
-  /usr/sbin/php-fpm${PHP_VERSION} --nodaemonize --fpm-config /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
-fi

@@ -3,14 +3,12 @@ LABEL maintainer="devops@nhsx.uk"
 
 ARG PHPV
 ARG DEBIAN_FRONTEND=noninteractive
-
-ENV S6_OVERLAY_VERSION=1.22.1.0
-ENV SOCKLOG_OVERLAY_VERSION=3.1.0-2
 ENV PHP_VERSION=$PHPV
 
 # copy in apt repos for openresty, nginx, php
 COPY conf/etc/apt/sources.list.d/*.new /etc/apt/sources.list.d/
 COPY php-redis_4.2.0-1_amd64.deb /
+COPY scripts/start-container.sh /
 
 RUN \
   # Install basic packages
@@ -21,9 +19,11 @@ RUN \
     ca-certificates \
     cron \
     curl \
+    gettext \
     git \
     gpg-agent \
     gnupg \
+    supervisor \
     ssh \
     nano \
     netcat \
@@ -81,22 +81,8 @@ RUN \
     # We have to install an old version of php-redis due to bug. See https://github.com/phpredis/phpredis/issues/1620
     #    when fix then add php${PHP_VERSION}-redis back in above.
     if [ $PHP_VERSION = "7.2" ]; then dpkg -i /php-redis_4.2.0-1_amd64.deb; else apt-get install php-redis --no-install-recommends -y; fi && \
-    # Install s6 overlay
+    mkdir -p /var/run/php && \
     cd /tmp && \
-      curl https://keybase.io/justcontainers/key.asc | gpg --import && \
-      curl -LO https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz && \
-      curl -LO https://github.com/just-containers/s6-overlay/releases/download/v$S6_OVERLAY_VERSION/s6-overlay-amd64.tar.gz.sig && \
-      gpg --verify s6-overlay-amd64.tar.gz.sig s6-overlay-amd64.tar.gz && \
-      tar xzf s6-overlay-amd64.tar.gz -C / && \
-      rm s6-overlay-amd64.tar.gz && \
-      rm s6-overlay-amd64.tar.gz.sig && \
-    # Install socklog overlay for s6 - DISALBED BY COMMENTING
-    #curl -LO https://github.com/just-containers/socklog-overlay/releases/download/v$SOCKLOG_OVERLAY_VERSION/socklog-overlay-amd64.tar.gz && \
-    #curl -LO https://github.com/just-containers/socklog-overlay/releases/download/v$SOCKLOG_OVERLAY_VERSION/socklog-overlay-amd64.tar.gz.sig && \
-    #gpg --verify socklog-overlay-amd64.tar.gz.sig socklog-overlay-amd64.tar.gz && \
-    #tar xzf socklog-overlay-amd64.tar.gz -C / && \
-    #rm socklog-overlay-amd64.tar.gz.sig && \
-    #rm socklog-overlay-amd64.tar.gz && \
     ## Add global Composer
       curl -sS https://getcomposer.org/installer | php && \
       mv composer.phar /usr/local/bin/composer && \
@@ -109,27 +95,29 @@ RUN \
       apt-get install atatus-php-agent --no-install-recommends -y && \
       apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# s6 overlay configs
-COPY conf/s6/services/ /etc/services.d/
-#COPY conf/s6/fix-attrs/ /etc/fix-attrs.d/
-COPY conf/s6/cont-init/ /etc/cont-init.d/
-RUN \
-  find /etc/services.d/ -type f -exec chmod 755 -- {} + && \
-  find /etc/cont-init.d/ -type f -exec chmod 755 -- {} +
+# supervisord configs
+COPY conf/supervisor/supervisord.conf /etc/supervisord.conf
+COPY conf/supervisor/enabled/* /etc/supervisor/conf.d/
 
 # Web server config
 COPY conf/nginx/ /etc/nginx/
 
+# fix php supervisor version
 # symlink so PHP CLI and FPM use the same php.ini
 # Modify PHP-FPM configuration files to set common properties and listen on socket.
 # We also remove /etc/ssmtp/ssmtp.conf because we don't need all that config. It gets
 # configured at container runtime in 004-mail.sh in s6.
-# mkfifo is used for the cron output logging.
 #  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
 #  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
 RUN \
+  envsubst < /etc/supervisor/conf.d/php-fpm.conf.template > /etc/supervisor/conf.d/php-fpm.conf && \
+  rm -f /etc/supervisor/conf.d/php-fpm.conf.template && \
   rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
   ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
+  sed -i -e 's|variables_order = "GPCS"|variables_order = "EGPCS"|g' /etc/php/${PHP_VERSION}/fpm/php.ini && \
+  sed -i -e 's|;clear_env = no|clear_env = no|g' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+  sed -i -e "s|;ping.path = /ping|ping.path = /healthz|g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+  sed -i -e "s|;ping.response = pong|ping.response = OK|g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i "s|;date.timezone =.*|date.timezone = UTC|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|upload_max_filesize = .*|upload_max_filesize = 1G|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i "s|post_max_size = .*|post_max_size = 512M|" /etc/php/${PHP_VERSION}/fpm/php.ini && \
@@ -141,13 +129,20 @@ RUN \
   sed -i -e "s|pid =.*|pid = \/var\/run\/php-fpm.pid|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
   sed -i "s|user = www-data|user = nobody|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i "s|group = www-data|group = nogroup|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+  sed -i -e 's|atatus.trace.response_time = 2000|atatus.trace.response_time = 1500|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini && \
+  sed -i -e 's|atatus.agent.log_file = "/var/log/atatus/agent.log"|atatus.agent.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini && \
+  sed -i -e 's|atatus.collector.log_file = "/var/log/atatus/collector.log"|atatus.collector.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini && \
   rm -rf /etc/nginx/sites-enabled/default && \
-  mkfifo /var/log/cronlog && \
-  chmod 0777 /var/log/cronlog && \
+  mkfifo /var/log/cron && \
+  chmod 0777 /var/log/cron && \
   rm -rf /etc/ssmtp/ssmtp.conf && \
   mkdir -p /src/public && \
   chown -R nobody:nogroup /src && \
   mkdir -p /var/ngx_pagespeed_cache && \
-  chown -R nobody:nogroup /var/ngx_pagespeed_cache
+  chown -R nobody:nogroup /var/ngx_pagespeed_cache && \
+  chmod +x /start-container.sh
 
-ENTRYPOINT [ "/init" ]
+COPY test.php /src/test.php
+COPY crontest /etc/cron.d/crontest
+
+CMD ["/start-container.sh"]
