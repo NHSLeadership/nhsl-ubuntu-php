@@ -22,6 +22,7 @@ RUN \
     gettext \
     git \
     gpg-agent \
+    ghostscript \
     gnupg \
     supervisor \
     ssh \
