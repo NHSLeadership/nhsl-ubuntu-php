@@ -6,6 +6,9 @@ printf "\033    _   ____  _______   _        _
  / /|  / __  /___/ /   | |___ / ___ \ 
 /_/ |_/_/ /_//____/    |_____/_/   \_\ \033\n\n"
 printf "Entered container environment...\n\n"
+printf "NHS Leadership Academy\n\n"
+printf " %-30s %-30s\n" "Base build date: " "`cat /build_image_date`"
+printf " %-30s %-30s\n" "Site build date: " "`cat /build_site_date`"
 
 # Container info:
 printf " %-30s %-30s\n" "Site:" "$SITE_NAME"
@@ -23,13 +26,13 @@ fi
 
 # if we're on web then we remove the cron service
 if [ "$CONTAINERROLE" == "web" ]; then
-  echo "Running a WEB pod so removing cron service from supervisor..."
+  echo " Running a WEB pod so removing cron service from supervisor..."
   rm -rf /etc/supervisor/conf.d/cron.conf
 fi
 
 # if we're on a worker then we remove the nginx and php services
 if [ "$CONTAINERROLE" == "worker" ]; then
-  echo "Running a WORKER pod so removing Nginx and PHP services from supervisor..."
+  echo " Running a WORKER pod so removing Nginx and PHP services from supervisor..."
   rm -rf /etc/supervisor/conf.d/nginx.conf
   rm -rf /etc/supervisor/conf.d/php-fpm.conf
 fi
@@ -152,7 +155,7 @@ fi
 ###
 ### Set Nginx config
 if [ ! -f /startup-nginx.conf ]; then
-  printf " %-30s %-30s\n" "Customising Nginx: " "Yes..."
+  printf " %-30s %-30s\n" "Customising Nginx: " "Yes, no overriding config found."
   if [ ! -z "$NGINX_PORT" ]; then
     printf " %-30s %-30s\n" "Nginx Port: " "$NGINX_PORT"
     sed -i -e "s|listen 80|listen $NGINX_PORT|g" /etc/nginx/sites-enabled/site.conf
@@ -271,7 +274,7 @@ if [ ! -z "$ATATUS_APM_LICENSE_KEY" ]; then
   sed -i -e "s/atatus.app_name = \"PHP App\"/atatus.app_name = \"$SITE_NAME\"/g" /etc/php/$PHP_VERSION/fpm/conf.d/atatus.ini
   sed -i -e "s/atatus.app_version = \"\"/atatus.app_version = \"$SITE_BRANCH-$BUILD\"/g" /etc/php/$PHP_VERSION/fpm/conf.d/atatus.ini
   sed -i -e "s/atatus.tags = \"\"/atatus.tags = \"$SITE_BRANCH-$BUILD, $SITE_BRANCH\"/g" /etc/php/$PHP_VERSION/fpm/conf.d/atatus.ini
-  printf "%-30s %-30s\n" "Atatus:" "Enabled"
+  printf " %-30s %-30s\n" "Atatus:" "Enabled"
 else
   # Atatus - if api key is not set then disable
   printf " %-30s %-30s\n" "Atatus: " "Disabled"

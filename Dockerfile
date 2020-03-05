@@ -140,6 +140,7 @@ RUN \
   chown -R nobody:nogroup /src && \
   mkdir -p /var/ngx_pagespeed_cache && \
   chown -R nobody:nogroup /var/ngx_pagespeed_cache && \
-  chmod +x /start-container.sh
+  chmod +x /start-container.sh && \
+  date > /build_image_date
 
 CMD ["/start-container.sh"]
