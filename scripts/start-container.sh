@@ -315,7 +315,10 @@ fi
 # END Custom script runs
 ###
 
-
+###
+# Dumping environment variables
+###
+printenv | sed 's/^\(.*\)$/export \1/g' >> /etc/profile.d/docker_env.sh
 
 ###
 # RUN THE CONTAINER
