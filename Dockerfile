@@ -43,7 +43,8 @@ RUN \
   apt-get update && \
   apt-get install \
     nginx \
-    libnginx-mod-brotli \
+# commented out due to broken package in PPA
+#    libnginx-mod-brotli \
     libnginx-mod-pagespeed \
     php${PHP_VERSION}-fpm \
     php${PHP_VERSION}-cli \
