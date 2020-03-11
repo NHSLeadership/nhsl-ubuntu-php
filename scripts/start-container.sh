@@ -40,23 +40,6 @@ fi
 ###
 # Email configuration
 ###
-# if GCP Production
-if [ "$ENVIRONMENT" == "production" ]; then
-    if [ -z "$MAIL_HOST" ]; then
-        export MAIL_HOST=master-smtp.smtp-production
-    fi
-    if [ -z "$MAIL_PORT" ]; then
-        export MAIL_PORT=25
-    fi
-fi
-
-# if GCP QA
-if [ "$ENVIRONMENT" == "qa" ]; then
-    if [ -z "$MAIL_HOST" ]; then
-        export MAIL_HOST=master-smtp.mailhog-production
-    fi
-fi
-
 # Do a quick check to see if were using an Amazon SQL DB, means were in AWS
 ## TODO: Remove once GCP is finished
 if [ -z "$MAIL_HOST" ]; then
@@ -80,6 +63,7 @@ if [ -z "$MAIL_HOST" ]; then
     if [ "$ENVIRONMENT" == "qa" ]; then
         export MAIL_HOST=master-smtp.mailhog-production
     fi
+  fi
 fi
 
 if [ -z "$MAIL_DRIVER" ]; then
