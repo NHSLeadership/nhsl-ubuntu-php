@@ -35,6 +35,8 @@ if [ "$CONTAINERROLE" == "worker" ]; then
   echo " Running a WORKER pod so removing Nginx and PHP services from supervisor..."
   rm -rf /etc/supervisor/conf.d/nginx.conf
   rm -rf /etc/supervisor/conf.d/php-fpm.conf
+  rm /etc/cron.d/php
+  mkdir -p /var/spool/cron
 fi
 
 ###
