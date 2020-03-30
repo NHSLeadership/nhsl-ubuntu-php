@@ -114,7 +114,6 @@ COPY conf/nginx/ /etc/nginx/
 RUN \
   envsubst < /etc/supervisor/conf.d/php-fpm.conf.template > /etc/supervisor/conf.d/php-fpm.conf && \
   rm -f /etc/supervisor/conf.d/php-fpm.conf.template && \
-  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
   sed -i -e 's|variables_order = "GPCS"|variables_order = "EGPCS"|g' /etc/php/${PHP_VERSION}/fpm/php.ini && \
   sed -i -e 's|variables_order = "GPCS"|variables_order = "EGPCS"|g' /etc/php/${PHP_VERSION}/cli/php.ini && \
   sed -i -e 's|;clear_env = no|clear_env = no|g' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
