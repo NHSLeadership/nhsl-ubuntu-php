@@ -16,8 +16,8 @@ RUN \
   apt-get upgrade -y && \
   apt-get dist-upgrade -y && \
   apt-get install \
+    busybox-static \
     ca-certificates \
-    cron \
     curl \
     gettext \
     git \
@@ -114,9 +114,8 @@ COPY conf/nginx/ /etc/nginx/
 RUN \
   envsubst < /etc/supervisor/conf.d/php-fpm.conf.template > /etc/supervisor/conf.d/php-fpm.conf && \
   rm -f /etc/supervisor/conf.d/php-fpm.conf.template && \
-  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
-  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
   sed -i -e 's|variables_order = "GPCS"|variables_order = "EGPCS"|g' /etc/php/${PHP_VERSION}/fpm/php.ini && \
+  sed -i -e 's|variables_order = "GPCS"|variables_order = "EGPCS"|g' /etc/php/${PHP_VERSION}/cli/php.ini && \
   sed -i -e 's|;clear_env = no|clear_env = no|g' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i -e "s|;ping.path = /ping|ping.path = /healthz|g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i -e "s|;ping.response = pong|ping.response = OK|g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
@@ -135,8 +134,6 @@ RUN \
   sed -i -e 's|atatus.agent.log_file = "/var/log/atatus/agent.log"|atatus.agent.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini && \
   sed -i -e 's|atatus.collector.log_file = "/var/log/atatus/collector.log"|atatus.collector.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini && \
   rm -rf /etc/nginx/sites-enabled/default && \
-  mkfifo /var/log/cron && \
-  chmod 0777 /var/log/cron && \
   rm -rf /etc/ssmtp/ssmtp.conf && \
   mkdir -p /src/public && \
   chown -R nobody:nogroup /src && \
