@@ -192,6 +192,7 @@ NGINX_GENERIC='location ~ \.php$ {\
             fastcgi_index index.php;\
             fastcgi_read_timeout 600s;\
             fastcgi_request_buffering off;\
+            fastcgi_param PHP_VALUE "atatus.enabled=true;";\
         }'
 
 NGINX_MOODLE='location ~ [^/]\.php(/|$) {\
@@ -204,6 +205,7 @@ NGINX_MOODLE='location ~ [^/]\.php(/|$) {\
             fastcgi_read_timeout 600s;\
             include fastcgi_params;\
             fastcgi_param PATH_INFO $fastcgi_path_info;\
+            fastcgi_param PHP_VALUE "atatus.enabled=true;";\
         }'
 
 NGINX_WORDPRESS='location / {\
@@ -220,6 +222,7 @@ NGINX_WORDPRESS='location / {\
             fastcgi_index index.php;\
             fastcgi_read_timeout 600s;\
             fastcgi_request_buffering off;\
+            fastcgi_param PHP_VALUE "atatus.enabled=true;";\
     }'
 
 NGINX_LARAVEL='location / {\
@@ -236,6 +239,7 @@ NGINX_LARAVEL='location / {\
             fastcgi_index index.php;\
             fastcgi_read_timeout 600s;\
             fastcgi_request_buffering off;\
+            fastcgi_param PHP_VALUE "atatus.enabled=true;";\
     }'
 
 if [ "$OSSAPP" == "MOODLE" ]; then
