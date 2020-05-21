@@ -266,7 +266,7 @@ MDL_SCORM="    location /local/external_manifests/ {\n\
         proxy_pass $SCORMPROXY;\n\
     }"
 
-if [ -z "$SCORMPROXY" ]; then
+if [ ! -z "$SCORMPROXY" ]; then
   printf " %-30s %-30s\n" "Moodle Proxy Pass: " "Enabled"
   sed -i -e "s@###scormproxy@$MDL_SCORM@g" /etc/nginx/sites-enabled/site.conf
 else
