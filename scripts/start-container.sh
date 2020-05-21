@@ -260,6 +260,23 @@ fi
 ###
 
 ###
+# Support Moodle's proxypass for Scorm content
+###
+MDL_SCORM="    location /local/external_manifests/ {\n\
+        proxy_pass $SCORMPROXY;\n\
+    }"
+
+if [ ! -z "$SCORMPROXY" ]; then
+  printf " %-30s %-30s\n" "Moodle Proxy Pass: " "Enabled"
+  sed -i -e "s@###scormproxy@$MDL_SCORM@g" /etc/nginx/sites-enabled/site.conf
+else
+  printf " %-30s %-30s\n" "Moodle Proxy Pass: " "Disabled"
+fi
+###
+# END support for Moodle scorm proxypass
+###
+
+###
 # Configure Atatus
 ###
 if [ ! -z "$ATATUS_APM_LICENSE_KEY" ]; then
