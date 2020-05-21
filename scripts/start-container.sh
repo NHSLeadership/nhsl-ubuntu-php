@@ -259,13 +259,6 @@ fi
 # END Predefined application configurations
 ###
 
-if [ ! -z "$NGINX_WEB_ROOT" ]; then
-  printf " %-30s %-30s\n" "Nginx Root: " "$NGINX_WEB_ROOT"
-  sed -i -e "s|root /src/public|root $NGINX_WEB_ROOT|g" /etc/nginx/sites-enabled/site.conf
-else
-  printf " %-30s %-30s\n" "Nginx Root:" "/src/public"
-fi
-
 ###
 # Support Moodle's proxypass for Scorm content
 ###
