@@ -259,6 +259,30 @@ fi
 # END Predefined application configurations
 ###
 
+if [ ! -z "$NGINX_WEB_ROOT" ]; then
+  printf " %-30s %-30s\n" "Nginx Root: " "$NGINX_WEB_ROOT"
+  sed -i -e "s|root /src/public|root $NGINX_WEB_ROOT|g" /etc/nginx/sites-enabled/site.conf
+else
+  printf " %-30s %-30s\n" "Nginx Root:" "/src/public"
+fi
+
+###
+# Support Moodle's proxypass for Scorm content
+###
+MDL_SCORM="    location /local/external_manifests/ {\n\
+        proxy_pass $SCORMPROXY;\n\
+    }"
+
+if [ -z "$SCORMPROXY" ]; then
+  printf " %-30s %-30s\n" "Moodle Proxy Pass: " "Enabled"
+  sed -i -e "s@###scormproxy@$MDL_SCORM@g" /etc/nginx/sites-enabled/site.conf
+else
+  printf " %-30s %-30s\n" "Moodle Proxy Pass: " "Disabled"
+fi
+###
+# END support for Moodle scorm proxypass
+###
+
 ###
 # Configure Atatus
 ###
