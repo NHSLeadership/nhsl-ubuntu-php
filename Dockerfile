@@ -130,9 +130,9 @@ RUN \
   sed -i -e "s|pid =.*|pid = \/var\/run\/php-fpm.pid|" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf && \
   sed -i "s|user = www-data|user = nobody|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   sed -i "s|group = www-data|group = nogroup|" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
-  sed -i -e 's|atatus.trace.response_time = 2000|atatus.trace.response_time = 1500|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini && \
-  sed -i -e 's|atatus.agent.log_file = "/var/log/atatus/agent.log"|atatus.agent.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini && \
-  sed -i -e 's|atatus.collector.log_file = "/var/log/atatus/collector.log"|atatus.collector.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/atatus.ini && \
+  sed -i -e 's|atatus.trace.response_time = 2000|atatus.trace.response_time = 1500|g' /etc/php/${PHP_VERSION}/fpm/conf.d/20-atatus.ini && \
+  sed -i -e 's|atatus.agent.log_file = "/var/log/atatus/agent.log"|atatus.agent.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/20-atatus.ini && \
+  sed -i -e 's|atatus.collector.log_file = "/var/log/atatus/collector.log"|atatus.collector.log_file = "/dev/stdout"|g' /etc/php/${PHP_VERSION}/fpm/conf.d/20-atatus.ini && \
   rm -rf /etc/nginx/sites-enabled/default && \
   rm -rf /etc/ssmtp/ssmtp.conf && \
   mkdir -p /src/public && \
