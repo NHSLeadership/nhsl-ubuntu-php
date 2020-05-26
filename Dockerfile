@@ -105,7 +105,6 @@ COPY conf/supervisor/enabled/* /etc/supervisor/conf.d/
 COPY conf/nginx/ /etc/nginx/
 
 # fix php supervisor version
-# symlink so PHP CLI and FPM use the same php.ini
 # Modify PHP-FPM configuration files to set common properties and listen on socket.
 # We also remove /etc/ssmtp/ssmtp.conf because we don't need all that config. It gets
 # configured at container runtime in 004-mail.sh in s6.

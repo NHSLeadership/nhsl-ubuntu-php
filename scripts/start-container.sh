@@ -92,7 +92,12 @@ sed -i -e "s|;sendmail_path =|sendmail_path = /usr/sbin/ssmtp -t|g" /etc/php/$PH
 if [ ! -z "$PHP_MEMORY_MAX" ]; then
   sed -i -e "s#memory_limit = 128M#memory_limit = ${PHP_MEMORY_MAX}M#g" /etc/php/$PHP_VERSION/fpm/php.ini
 fi
-printf " %-30s %-30s\n" "PHP Memory Max:" "`php -r 'echo ini_get("memory_limit");'`"
+printf " %-30s %-30s\n" "PHP Memory Max:" "`php -c /etc/php/$PHP_VERSION/fpm/php.ini -r 'echo ini_get("memory_limit");'`"
+
+if [ ! -z "$PHP_MAX_EXECUTION_TIME" ]; then
+  sed -i -e "s#max_execution_time = 30#max_execution_time = ${PHP_MAX_EXECUTION_TIME}#g" /etc/php/$PHP_VERSION/fpm/php.ini
+fi
+printf " %-30s %-30s\n" "PHP Memory Max:" "`php -c /etc/php/$PHP_VERSION/fpm/php.ini -r 'echo ini_get("memory_limit");'`"
 
 ### PHP Opcache
 if [ -z "$DISABLE_OPCACHE" ]; then
@@ -110,7 +115,7 @@ if [ ! -z "$PHP_OPCACHE_MEMORY" ]; then
   # if php_opcache_memory is set
   sed -i -e "s#opcache.memory_consumption=16#opcache.memory_consumption=${PHP_OPCACHE_MEMORY}#g" /etc/php/$PHP_VERSION/fpm/php.ini
 fi
-printf " %-30s %-30s\n" "Opcache Memory Max: " "`php -r 'echo ini_get("opcache.memory_consumption");'`M"
+printf " %-30s %-30s\n" "Opcache Memory Max: " "`php -c /etc/php/$PHP_VERSION/fpm/php.ini -r 'echo ini_get("opcache.memory_consumption");'`M"
 
 ###
 ### Set PHP errors on in QA only.
