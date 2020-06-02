@@ -45,7 +45,6 @@ RUN \
     nginx \
 # commented out due to broken package in PPA
 #    libnginx-mod-brotli \
-    libnginx-mod-pagespeed \
     php${PHP_VERSION}-fpm \
     php${PHP_VERSION}-cli \
     php${PHP_VERSION}-mysql \
@@ -136,8 +135,6 @@ RUN \
   rm -rf /etc/ssmtp/ssmtp.conf && \
   mkdir -p /src/public && \
   chown -R nobody:nogroup /src && \
-  mkdir -p /var/ngx_pagespeed_cache && \
-  chown -R nobody:nogroup /var/ngx_pagespeed_cache && \
   chmod +x /start-container.sh && \
   date > /build_image_date
 
