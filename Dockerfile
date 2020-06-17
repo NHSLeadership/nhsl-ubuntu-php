@@ -24,6 +24,7 @@ RUN \
     gpg-agent \
     ghostscript \
     gnupg \
+    libfcgi \
     supervisor \
     ssh \
     nano \
@@ -110,6 +111,9 @@ COPY conf/nginx/ /etc/nginx/
 #  rm -rf /etc/php/${PHP_VERSION}/cli/php.ini && \
 #  ln -s /etc/php/${PHP_VERSION}/fpm/php.ini /etc/php/${PHP_VERSION}/cli/php.ini && \
 RUN \
+  curl https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck --output /usr/local/bin/php-fpm-healthcheck && \
+  chmod +x /usr/local/bin/php-fpm-healthcheck && \
+  sed -i -e 's|;pm.status_path = /status|pm.status_path = /status|g' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
   envsubst < /etc/supervisor/conf.d/php-fpm.conf.template > /etc/supervisor/conf.d/php-fpm.conf && \
   rm -f /etc/supervisor/conf.d/php-fpm.conf.template && \
   sed -i -e 's|variables_order = "GPCS"|variables_order = "EGPCS"|g' /etc/php/${PHP_VERSION}/fpm/php.ini && \
