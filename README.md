@@ -7,9 +7,9 @@ This provides Nginx, PHP, and an array of commonly used tools. It aims to be an 
 ## Building
 This image needs some Docker --build-arg statements to be able to build successfully.
 
-| Argument     | Values                 | Comments                             |
-| ------------ | ---------------------- | ------------------------------------ |
-| PHPV         | `7.1`, `7.2`, `7.3`    | Specify the PHP version you require  |
+| Argument     | Values                        | Comments                             |
+| ------------ | ----------------------------- | ------------------------------------ |
+| PHPV         | `7.1`, `7.2`, `7.3`, `7.4`    | Specify the PHP version you require  |
 
 For example, if you wish to build an Nginx image running PHP 7.3 you would use:
 `docker build -t nhsleadershipacademy/nhsl-ubuntu-php:nginx-7.3 --build-arg --build-arg PHPV=7.3 -f Dockerfile .`
