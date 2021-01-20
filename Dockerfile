@@ -94,7 +94,10 @@ RUN \
       | tee -a /etc/apt/sources.list.d/atatus-php-agent.list && \
       apt-get update && \
       apt-get install atatus-php-agent --no-install-recommends -y && \
-      apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+      apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    ## Add in PHP FPM health checker script
+    curl https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck --output /usr/local/bin/php-fpm-healthcheck && \
+    chmod +x /usr/local/bin/php-fpm-healthcheck
 
 # supervisord configs
 COPY conf/supervisor/supervisord.conf /etc/supervisord.conf
