@@ -1,0 +1,28 @@
+version: 2
+registries:
+  docker-registry-481015924503-dkr-ecr-eu-west-2-amazonaws-com:
+    type: docker-registry
+    url: https://481015924503.dkr.ecr.eu-west-2.amazonaws.com
+    username: AKIAW77WIQ4LTGHHZW4P
+    password: "${{secrets.DOCKER_REGISTRY_481015924503_DKR_ECR_EU_WEST_2_AMAZONAWS_COM_PASSWORD}}"
+  git-github-com:
+    type: git
+    url: https://github.com
+    username: x-access-token
+    password: "${{secrets.GIT_GITHUB_COM_PASSWORD}}"
+  docker-registry-registry-hub-docker-com:
+    type: docker-registry
+    url: https://registry.hub.docker.com
+    username: nhsxdevops
+    password: "${{secrets.DOCKER_REGISTRY_REGISTRY_HUB_DOCKER_COM_PASSWORD}}"
+
+updates:
+- package-ecosystem: docker
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 99
+  registries:
+  - docker-registry-481015924503-dkr-ecr-eu-west-2-amazonaws-com
+  - docker-registry-registry-hub-docker-com
+  - git-github-com
